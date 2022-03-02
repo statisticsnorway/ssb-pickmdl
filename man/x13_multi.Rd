@@ -9,7 +9,7 @@ x13_multi(..., spec)
 \arguments{
 \item{...}{\code{x13} parameters}
 
-\item{spec}{List of several \code{x13_spec} output objects. That is, \code{spec} can be output from  \code{\link{x13_spec_multi}} .}
+\item{spec}{List of several \code{x13_spec} output objects. That is, \code{spec} can be output from  \code{\link{x13_spec_multi}}.}
 }
 \value{
 List of several \code{x13} output objects

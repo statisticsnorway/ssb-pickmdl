@@ -5,7 +5,7 @@
 #' This function behaves like `x13` except that parameter `spec` is a list of multiple specifications.
 #'
 #' @param ... `x13` parameters
-#' @param spec List of several `x13_spec` output objects. That is, `spec` can be output from  \code{\link{x13_spec_multi}} .
+#' @param spec List of several `x13_spec` output objects. That is, `spec` can be output from  \code{\link{x13_spec_multi}}.
 #'
 #' @return List of several `x13` output objects
 #' @export
