@@ -1,0 +1,15 @@
+Package: pickmdl
+Type: Package
+Title: PICKMDL for RJDemetra
+Version: 0.0.1
+Date: 2022-03-02
+Authors@R: c(person("Øyvind", "Langsrud", role = c("aut", "cre"), email = "oyl@ssb.no"),
+             person("Dinh Quang", " Pham", role = c("aut")))
+Author: Øyvind Langsrud [aut, cre]
+Maintainer: Øyvind Langsrud <oyl@ssb.no>
+Depends: RJDemetra
+Description: PICKMDL for RJDemetra. 
+License: Apache License 2.0 | file LICENSE
+Roxygen: list(markdown = TRUE)
+Encoding: UTF-8
+RoxygenNote: 7.1.2
