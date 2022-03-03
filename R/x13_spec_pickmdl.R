@@ -20,9 +20,9 @@
 #' @importFrom RJDemetra x13_spec
 #'
 #' @examples
-#' spec5 <- x13_spec_multi(spec = "RSA3", transform.function = "Log")
+#' spec5 <- x13_spec_pickmdl(spec = "RSA3", transform.function = "Log")
 #' 
-x13_spec_multi <- function(..., arima.p = c(0, 0, 2, 0, 2), 
+x13_spec_pickmdl <- function(..., arima.p = c(0, 0, 2, 0, 2), 
                              arima.d = c(1, 1, 1, 2, 1), arima.q = c(1, 2, 0, 2, 2), 
                              arima.bp = 0, arima.bd = 1, arima.bq = 1,
                              automdl.enabled = FALSE ) {

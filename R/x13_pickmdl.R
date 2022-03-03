@@ -56,7 +56,7 @@ x13_pickmdl <- function(series, userdefined = NULL, ..., arima.p = c(0, 0, 2, 0,
   if(length(arima.bd) == 1) arima.bd <- rep(arima.bd, n)
   if(length(arima.bq) == 1) arima.bq <- rep(arima.bq, n)
   
-  spec_multi <- x13_spec_multi(..., 
+  spec_multi <- x13_spec_pickmdl(..., 
                                arima.p = arima.p, arima.d = arima.d, 
                                arima.q = arima.q, arima.bp = arima.bp, 
                                arima.bd = arima.bd, arima.bq = arima.bq,

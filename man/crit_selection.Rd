@@ -18,7 +18,7 @@ Selection from table of PICKMDL criteria
 \examples{
 myseries <- pickmdl_data("myseries")
 
-spec5 <- x13_spec_multi(spec = "RSA3", transform.function = "Log")
+spec5 <- x13_spec_pickmdl(spec = "RSA3", transform.function = "Log")
 
 sa5 <- x13_multi(myseries, spec = spec5)   
 

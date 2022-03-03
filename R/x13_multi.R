@@ -5,7 +5,7 @@
 #' This function behaves like `x13` except that parameter `spec` is a list of multiple specifications.
 #'
 #' @param ... `x13` parameters
-#' @param spec List of several `x13_spec` output objects. That is, `spec` can be output from  \code{\link{x13_spec_multi}}.
+#' @param spec List of several `x13_spec` output objects. That is, `spec` can be output from  \code{\link{x13_spec_pickmdl}}.
 #'
 #' @return List of several `x13` output objects
 #' @export
@@ -14,7 +14,7 @@
 #' @examples
 #' myseries <- pickmdl_data("myseries")
 #' 
-#' spec5 <- x13_spec_multi(spec = "RSA3", transform.function = "Log")
+#' spec5 <- x13_spec_pickmdl(spec = "RSA3", transform.function = "Log")
 #' 
 #' sa5 <- x13_multi(myseries, spec = spec5)   
 #'            

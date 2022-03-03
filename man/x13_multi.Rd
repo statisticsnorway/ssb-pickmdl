@@ -9,7 +9,7 @@ x13_multi(..., spec)
 \arguments{
 \item{...}{\code{x13} parameters}
 
-\item{spec}{List of several \code{x13_spec} output objects. That is, \code{spec} can be output from  \code{\link{x13_spec_multi}}.}
+\item{spec}{List of several \code{x13_spec} output objects. That is, \code{spec} can be output from  \code{\link{x13_spec_pickmdl}}.}
 }
 \value{
 List of several \code{x13} output objects
@@ -23,7 +23,7 @@ This function behaves like \code{x13} except that parameter \code{spec} is a lis
 \examples{
 myseries <- pickmdl_data("myseries")
 
-spec5 <- x13_spec_multi(spec = "RSA3", transform.function = "Log")
+spec5 <- x13_spec_pickmdl(spec = "RSA3", transform.function = "Log")
 
 sa5 <- x13_multi(myseries, spec = spec5)   
            
