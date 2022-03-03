@@ -28,3 +28,5 @@ vignettes/*.pdf
 .Renviron
 pickmdl.Rproj
 .gitignore
+..pdf
+generatePDF.bat
