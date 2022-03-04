@@ -30,3 +30,6 @@ pickmdl.Rproj
 .gitignore
 ..pdf
 generatePDF.bat
+eksempelkode.R
+pickmdl.pdf
+pickmdl_source.R
