@@ -4,7 +4,7 @@
 \alias{x13_pickmdl}
 \title{x13 with PICKMDL}
 \usage{
-x13_pickmdl(series, spec, ...)
+x13_pickmdl(series, spec, ..., pickmdl_method = "first")
 }
 \arguments{
 \item{series}{\code{x13} parameter}
@@ -12,6 +12,8 @@ x13_pickmdl(series, spec, ...)
 \item{spec}{List of several \code{x13_spec} output objects. That is, \code{spec} can be output from  \code{\link{x13_spec_pickmdl}}.}
 
 \item{...}{Further \code{x13} parameters (currently only parameter \code{userdefined} is additional parameter to \code{x13}).}
+
+\item{pickmdl_method}{\code{\link{crit_selection}} parameter}
 }
 \value{
 An \code{x13} output object

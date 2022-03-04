@@ -4,10 +4,14 @@
 \alias{crit_selection}
 \title{Selection from table of PICKMDL criteria}
 \usage{
-crit_selection(crit_tab)
+crit_selection(crit_tab, pickmdl_method = "first")
 }
 \arguments{
 \item{crit_tab}{Output from  \code{\link{crit_table}}}
+
+\item{pickmdl_method}{A replacement for the original \code{PICKMDL} argument, \code{method}.
+Possible values are \code{"first"}(default) and \code{"aic"}.
+The latter is an alternative to the original method, \code{"best"} (not implemented).}
 }
 \value{
 Selected index
@@ -27,5 +31,7 @@ tab <- crit_table(sa5)
 crit_selection(tab)
 crit_selection(tab[2:5, ])
 crit_selection(tab[1:2, ]) # Warning
+crit_selection(tab[5:1, ])
+crit_selection(tab[5:1, ], pickmdl_method = "aic")
 
 }

@@ -3,6 +3,9 @@
 #' Selection from table of PICKMDL criteria 
 #'
 #' @param crit_tab Output from  \code{\link{crit_table}}
+#' @param pickmdl_method A replacement for the original `PICKMDL` argument, `method`. 
+#'          Possible values are `"first"`(default) and `"aic"`. 
+#'          The latter is an alternative to the original method, `"best"` (not implemented). 
 #'
 #' @return Selected index
 #' @export
@@ -19,9 +22,19 @@
 #' crit_selection(tab)
 #' crit_selection(tab[2:5, ])
 #' crit_selection(tab[1:2, ]) # Warning
+#' crit_selection(tab[5:1, ])
+#' crit_selection(tab[5:1, ], pickmdl_method = "aic")
 #' 
-crit_selection <- function(crit_tab){
-  x <- crit_tab[,"m_aic"]
+crit_selection <- function(crit_tab, pickmdl_method = "first"){
+  if(!(pickmdl_method %in% c("first", "aic")))
+    stop('Allowed values of parameter pickmdl_method are "first" and "aic")')
+  
+  if(pickmdl_method == "aic") {
+    x <- crit_tab[,"m_aic"]
+  } else {
+    x <- rep(1, nrow(crit_tab))
+  }
+  
   x[!(crit_tab[,"crit1"] < 0.15 & crit_tab[,"crit2"] > 0.05 & crit_tab[,"crit3"] < 0.9)] <- Inf
   if (min(x) == Inf){
     warning("No model is ok according to criteria")

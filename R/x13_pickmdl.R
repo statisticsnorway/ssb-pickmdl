@@ -6,6 +6,7 @@
 #' @param series `x13` parameter
 #' @param spec List of several `x13_spec` output objects. That is, `spec` can be output from  \code{\link{x13_spec_pickmdl}}.
 #' @param ... Further `x13` parameters (currently only parameter `userdefined` is additional parameter to `x13`).
+#' @param pickmdl_method \code{\link{crit_selection}} parameter
 #'
 #' @return An `x13` output object
 #' @export
@@ -42,7 +43,7 @@
 #' spec_d  <- x13_spec_pickmdl(spec = "RSA3", transform.function = "None")
 #' d <- x13_pickmdl(myseries, spec_d) 
 #'                                           
-x13_pickmdl <- function(series, spec, ...) {
+x13_pickmdl <- function(series, spec, ..., pickmdl_method = "first") {
   
   if (!all(apply(sapply(spec, class),1, unique) == c("SA_spec", "X13"))) {
     stop("`spec` must be a list of `x13_spec` output objects. Run `x13_spec_pickmdl`?")
@@ -52,7 +53,7 @@ x13_pickmdl <- function(series, spec, ...) {
   
   crit_tab <- crit_table(sa_mult)
   
-  mdl_nr <- crit_selection(crit_tab)
+  mdl_nr <- crit_selection(crit_tab, pickmdl_method = pickmdl_method)
   
   # easy to return sa_mult[[mdl_nr]], but prepare for more general code
   # series for selection and final series for x13 may be different 
