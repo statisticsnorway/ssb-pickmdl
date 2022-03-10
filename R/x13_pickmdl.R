@@ -7,6 +7,8 @@
 #' @param spec List of several `x13_spec` output objects. That is, `spec` can be output from  \code{\link{x13_spec_pickmdl}}.
 #' @param ... Further `x13` parameters (currently only parameter `userdefined` is additional parameter to `x13`).
 #' @param pickmdl_method \code{\link{crit_selection}} parameter
+#' @param star           \code{\link{crit_selection}} parameter
+#' @param when_star      \code{\link{crit_selection}} parameter
 #'
 #' @return An `x13` output object
 #' @export
@@ -41,9 +43,15 @@
 #' 
 #' # Warning when transform.function = "None"
 #' spec_d  <- x13_spec_pickmdl(spec = "RSA3", transform.function = "None")
-#' d <- x13_pickmdl(myseries, spec_d) 
+#' d <- x13_pickmdl(myseries, spec_d)
+#' d$regarima 
+#' 
+#' # Warning avoided (when_star) and 2nd (star) model selected 
+#' e <- x13_pickmdl(myseries, spec_d, star = 2, when_star = NULL)
+#' e$regarima   
 #'                                           
-x13_pickmdl <- function(series, spec, ..., pickmdl_method = "first") {
+x13_pickmdl <- function(series, spec, ..., 
+                        pickmdl_method = "first", star = 1, when_star = warning) {
   
   if (!all(apply(sapply(spec, class),1, unique) == c("SA_spec", "X13"))) {
     stop("`spec` must be a list of `x13_spec` output objects. Run `x13_spec_pickmdl`?")
@@ -53,7 +61,8 @@ x13_pickmdl <- function(series, spec, ..., pickmdl_method = "first") {
   
   crit_tab <- crit_table(sa_mult)
   
-  mdl_nr <- crit_selection(crit_tab, pickmdl_method = pickmdl_method)
+  mdl_nr <- crit_selection(crit_tab, pickmdl_method = pickmdl_method, 
+                           star = star, when_star = when_star)
   
   # easy to return sa_mult[[mdl_nr]], but prepare for more general code
   # series for selection and final series for x13 may be different 

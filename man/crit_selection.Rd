@@ -4,7 +4,12 @@
 \alias{crit_selection}
 \title{Selection from table of PICKMDL criteria}
 \usage{
-crit_selection(crit_tab, pickmdl_method = "first")
+crit_selection(
+  crit_tab,
+  pickmdl_method = "first",
+  star = 1,
+  when_star = warning
+)
 }
 \arguments{
 \item{crit_tab}{Output from  \code{\link{crit_table}}}
@@ -12,6 +17,11 @@ crit_selection(crit_tab, pickmdl_method = "first")
 \item{pickmdl_method}{A replacement for the original \code{PICKMDL} argument, \code{method}.
 Possible values are \code{"first"}(default) and \code{"aic"}.
 The latter is an alternative to the original method, \code{"best"} (not implemented).}
+
+\item{star}{Index to be selected when no model is ok according to criteria.}
+
+\item{when_star}{Function to be called when no model is ok according to criteria.
+Supply \code{stop} to invoke error.  Supply \code{NULL} to do nothing.}
 }
 \value{
 Selected index
@@ -31,6 +41,7 @@ tab <- crit_table(sa5)
 crit_selection(tab)
 crit_selection(tab[2:5, ])
 crit_selection(tab[1:2, ]) # Warning
+crit_selection(tab[1:2, ], star = 2, when_star = message) 
 crit_selection(tab[5:1, ])
 crit_selection(tab[5:1, ], pickmdl_method = "aic")
 

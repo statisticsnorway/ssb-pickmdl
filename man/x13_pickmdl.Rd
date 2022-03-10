@@ -4,7 +4,14 @@
 \alias{x13_pickmdl}
 \title{x13 with PICKMDL}
 \usage{
-x13_pickmdl(series, spec, ..., pickmdl_method = "first")
+x13_pickmdl(
+  series,
+  spec,
+  ...,
+  pickmdl_method = "first",
+  star = 1,
+  when_star = warning
+)
 }
 \arguments{
 \item{series}{\code{x13} parameter}
@@ -14,6 +21,10 @@ x13_pickmdl(series, spec, ..., pickmdl_method = "first")
 \item{...}{Further \code{x13} parameters (currently only parameter \code{userdefined} is additional parameter to \code{x13}).}
 
 \item{pickmdl_method}{\code{\link{crit_selection}} parameter}
+
+\item{star}{\code{\link{crit_selection}} parameter}
+
+\item{when_star}{\code{\link{crit_selection}} parameter}
 }
 \value{
 An \code{x13} output object
@@ -51,6 +62,11 @@ b$regarima
 
 # Warning when transform.function = "None"
 spec_d  <- x13_spec_pickmdl(spec = "RSA3", transform.function = "None")
-d <- x13_pickmdl(myseries, spec_d) 
+d <- x13_pickmdl(myseries, spec_d)
+d$regarima 
+
+# Warning avoided (when_star) and 2nd (star) model selected 
+e <- x13_pickmdl(myseries, spec_d, star = 2, when_star = NULL)
+e$regarima   
                                           
 }
