@@ -9,6 +9,8 @@
 #' @param pickmdl_method \code{\link{crit_selection}} parameter
 #' @param star           \code{\link{crit_selection}} parameter
 #' @param when_star      \code{\link{crit_selection}} parameter
+#' @param identification_end To shorten the series before runs used to identify (arima) parameters.
+#'            That is, the series is shortened by `window(series,` `end = identification_end)`.
 #'
 #' @return An `x13` output object
 #' @export
@@ -20,6 +22,9 @@
 #' 
 #' a <- x13_pickmdl(myseries, spec_a)
 #' a$regarima
+#' 
+#' a2 <- x13_pickmdl(myseries, spec_a, identification_end = c(2014, 2))
+#' a2$regarima
 #' 
 #' allvar <- pickmdl_data("allvar")
 #' 
@@ -38,7 +43,7 @@
 #'                                     "2020-12-01", "2021-01-01", "2021-02-01",
 #'                                     "2021-03-01", "2021-04-01", "2021-05-01",
 #'                                     "2021-06-01", "2021-07-01", "2021-08-01"))
-#' b <- x13_pickmdl(myseries, spec_b)                                     
+#' b <- x13_pickmdl(myseries, spec_b, identification_end = c(2020, 2))                                     
 #' b$regarima
 #' 
 #' # Warning when transform.function = "None"
@@ -51,13 +56,14 @@
 #' e$regarima   
 #'                                           
 x13_pickmdl <- function(series, spec, ..., 
-                        pickmdl_method = "first", star = 1, when_star = warning) {
+                        pickmdl_method = "first", star = 1, when_star = warning,
+                        identification_end = NULL) {
   
   if (!all(apply(sapply(spec, class),1, unique) == c("SA_spec", "X13"))) {
     stop("`spec` must be a list of `x13_spec` output objects. Run `x13_spec_pickmdl`?")
   }
   
-  sa_mult <- x13_multi(series = series, spec = spec, ...)
+  sa_mult <- x13_multi(series = window(series, end = identification_end), spec = spec, ...)
   
   crit_tab <- crit_table(sa_mult)
   

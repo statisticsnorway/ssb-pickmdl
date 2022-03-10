@@ -10,7 +10,8 @@ x13_pickmdl(
   ...,
   pickmdl_method = "first",
   star = 1,
-  when_star = warning
+  when_star = warning,
+  identification_end = NULL
 )
 }
 \arguments{
@@ -25,6 +26,9 @@ x13_pickmdl(
 \item{star}{\code{\link{crit_selection}} parameter}
 
 \item{when_star}{\code{\link{crit_selection}} parameter}
+
+\item{identification_end}{To shorten the series before runs used to identify (arima) parameters.
+That is, the series is shortened by \verb{window(series,} \verb{end = identification_end)}.}
 }
 \value{
 An \code{x13} output object
@@ -39,6 +43,9 @@ spec_a  <- x13_spec_pickmdl(spec = "RSA3", transform.function = "Log")
 
 a <- x13_pickmdl(myseries, spec_a)
 a$regarima
+
+a2 <- x13_pickmdl(myseries, spec_a, identification_end = c(2014, 2))
+a2$regarima
 
 allvar <- pickmdl_data("allvar")
 
@@ -57,7 +64,7 @@ spec_b <- x13_spec_pickmdl(
                                     "2020-12-01", "2021-01-01", "2021-02-01",
                                     "2021-03-01", "2021-04-01", "2021-05-01",
                                     "2021-06-01", "2021-07-01", "2021-08-01"))
-b <- x13_pickmdl(myseries, spec_b)                                     
+b <- x13_pickmdl(myseries, spec_b, identification_end = c(2020, 2))                                     
 b$regarima
 
 # Warning when transform.function = "None"
