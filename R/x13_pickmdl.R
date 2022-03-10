@@ -14,6 +14,7 @@
 #'
 #' @return An `x13` output object
 #' @export
+#' @importFrom stats window
 #'
 #' @examples
 #' myseries <- pickmdl_data("myseries")
@@ -69,9 +70,6 @@ x13_pickmdl <- function(series, spec, ...,
   
   mdl_nr <- crit_selection(crit_tab, pickmdl_method = pickmdl_method, 
                            star = star, when_star = when_star)
-  
-  # easy to return sa_mult[[mdl_nr]], but prepare for more general code
-  # series for selection and final series for x13 may be different 
   
   x13(series = series, spec = spec[[mdl_nr]], ...)
 }
