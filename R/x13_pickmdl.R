@@ -15,7 +15,8 @@
 #'            This is an alternative to  `identification_end`.
 #' @param identify_filters When `TRUE`, moving average filters are identified by the shortened (see above) series.
 #' @param automdl.enabled When `TRUE`, automdl is performed instead of pickmdl. 
-#'            Then, spec can be a single `x13_spec` output object (only first is used when list of several). 
+#'            Then, spec can be a single `x13_spec` output object (only first is used when list of several).
+#' @param verbose Printing information to console when `TRUE`.          
 #'
 #' @return An `x13` output object
 #' @export
@@ -26,7 +27,7 @@
 #' 
 #' spec_a  <- x13_spec_pickmdl(spec = "RSA3", transform.function = "Log")
 #' 
-#' a <- x13_pickmdl(myseries, spec_a)
+#' a <- x13_pickmdl(myseries, spec_a, verbose = TRUE)
 #' a$regarima
 #' 
 #' a2 <- x13_pickmdl(myseries, spec_a, identification_end = c(2014, 2))
@@ -72,22 +73,20 @@
 #' 
 #' # Warning when transform.function = "None"
 #' spec_d  <- x13_spec_pickmdl(spec = "RSA3", transform.function = "None")
-#' d <- x13_pickmdl(myseries, spec_d)
-#' d$regarima 
+#' d <- x13_pickmdl(myseries, spec_d, verbose = TRUE)
 #' 
 #' # Warning avoided (when_star) and 2nd (star) model selected 
-#' d2 <- x13_pickmdl(myseries, spec_d, star = 2, when_star = NULL)
-#' d2$regarima  
+#' d2 <- x13_pickmdl(myseries, spec_d, star = 2, when_star = NULL, verbose = TRUE)
 #' 
 #' # automdl instead  
-#' d3 <- x13_automdl(myseries, spec_d)
-#' d3$regarima     
+#' d3 <- x13_automdl(myseries, spec_d, verbose = TRUE)
 #'                                           
 x13_pickmdl <- function(series, spec, ..., 
                         pickmdl_method = "first", star = 1, when_star = warning,
                         identification_end = NULL, identification_estimate.to = NULL, 
                         identify_filters = FALSE, 
-                        automdl.enabled = FALSE) {
+                        automdl.enabled = FALSE,
+                        verbose = FALSE) {
   
   automdl.enabled <- isTRUE(automdl.enabled)
   
@@ -126,13 +125,19 @@ x13_pickmdl <- function(series, spec, ...,
     mdl_nr <- crit_selection(crit_tab, pickmdl_method = pickmdl_method, star = star, when_star = when_star)
   }
   
+  if(verbose){
+    print(sa_mult[[mdl_nr]]$regarima$arma)
+  }
+  
   spec <- spec[[mdl_nr]] 
   
   if(identify_filters){
     filters <- filter_input(sa_mult[[mdl_nr]])
-    filters <<- filters 
     spec <- x13_spec(spec, x11.trendAuto = FALSE, 
                      x11.trendma = filters[["x11.trendma"]], x11.seasonalma = filters[["x11.seasonalma"]])
+    if(verbose){
+      print(unlist(filters), quote = FALSE)
+    }
   }
   
   x13(series = series, spec = spec, ...)

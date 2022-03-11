@@ -15,7 +15,8 @@ x13_pickmdl(
   identification_end = NULL,
   identification_estimate.to = NULL,
   identify_filters = FALSE,
-  automdl.enabled = FALSE
+  automdl.enabled = FALSE,
+  verbose = FALSE
 )
 
 x13_automdl(..., automdl.enabled = TRUE)
@@ -43,6 +44,8 @@ This is an alternative to  \code{identification_end}.}
 
 \item{automdl.enabled}{When \code{TRUE}, automdl is performed instead of pickmdl.
 Then, spec can be a single \code{x13_spec} output object (only first is used when list of several).}
+
+\item{verbose}{Printing information to console when \code{TRUE}.}
 }
 \value{
 An \code{x13} output object
@@ -55,7 +58,7 @@ myseries <- pickmdl_data("myseries")
 
 spec_a  <- x13_spec_pickmdl(spec = "RSA3", transform.function = "Log")
 
-a <- x13_pickmdl(myseries, spec_a)
+a <- x13_pickmdl(myseries, spec_a, verbose = TRUE)
 a$regarima
 
 a2 <- x13_pickmdl(myseries, spec_a, identification_end = c(2014, 2))
@@ -101,15 +104,12 @@ b3$decomposition
 
 # Warning when transform.function = "None"
 spec_d  <- x13_spec_pickmdl(spec = "RSA3", transform.function = "None")
-d <- x13_pickmdl(myseries, spec_d)
-d$regarima 
+d <- x13_pickmdl(myseries, spec_d, verbose = TRUE)
 
 # Warning avoided (when_star) and 2nd (star) model selected 
-d2 <- x13_pickmdl(myseries, spec_d, star = 2, when_star = NULL)
-d2$regarima  
+d2 <- x13_pickmdl(myseries, spec_d, star = 2, when_star = NULL, verbose = TRUE)
 
 # automdl instead  
-d3 <- x13_automdl(myseries, spec_d)
-d3$regarima     
+d3 <- x13_automdl(myseries, spec_d, verbose = TRUE)
                                           
 }
