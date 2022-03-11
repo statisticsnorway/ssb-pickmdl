@@ -13,6 +13,7 @@
 #'            That is, the series is shortened by `window(series,` `end = identification_end)`.
 #' @param identification_estimate.to   To set \code{\link{x13_spec}} parameter `estimate.to` before runs used to identify (arima) parameters.  
 #'            This is an alternative to  `identification_end`.
+#' @param identify_filters When `TRUE`, moving average filters are identified by the shortened (see above) series.
 #' @param automdl.enabled When `TRUE`, automdl is performed instead of pickmdl. 
 #'            Then, spec can be a single `x13_spec` output object (only first is used when list of several). 
 #'
@@ -63,6 +64,12 @@
 #' b <- x13_pickmdl(myseries, spec_b, identification_end = c(2020, 2))                                     
 #' b$regarima
 #' 
+#' # Effect of identify_filters
+#' b2 <- x13_pickmdl(myseries, spec_b, identification_end = c(2010, 2))
+#' b2$decomposition
+#' b3 <- x13_pickmdl(myseries, spec_b, identification_end = c(2010, 2), identify_filters = TRUE)
+#' b3$decomposition
+#' 
 #' # Warning when transform.function = "None"
 #' spec_d  <- x13_spec_pickmdl(spec = "RSA3", transform.function = "None")
 #' d <- x13_pickmdl(myseries, spec_d)
@@ -79,6 +86,7 @@
 x13_pickmdl <- function(series, spec, ..., 
                         pickmdl_method = "first", star = 1, when_star = warning,
                         identification_end = NULL, identification_estimate.to = NULL, 
+                        identify_filters = FALSE, 
                         automdl.enabled = FALSE) {
   
   automdl.enabled <- isTRUE(automdl.enabled)
@@ -118,7 +126,16 @@ x13_pickmdl <- function(series, spec, ...,
     mdl_nr <- crit_selection(crit_tab, pickmdl_method = pickmdl_method, star = star, when_star = when_star)
   }
   
-  x13(series = series, spec = spec[[mdl_nr]], ...)
+  spec <- spec[[mdl_nr]] 
+  
+  if(identify_filters){
+    filters <- filter_input(sa_mult[[mdl_nr]])
+    filters <<- filters 
+    spec <- x13_spec(spec, x11.trendAuto = FALSE, 
+                     x11.trendma = filters[["x11.trendma"]], x11.seasonalma = filters[["x11.seasonalma"]])
+  }
+  
+  x13(series = series, spec = spec, ...)
 }
 
 #' @rdname x13_pickmdl

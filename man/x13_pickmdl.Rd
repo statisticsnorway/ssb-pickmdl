@@ -14,6 +14,7 @@ x13_pickmdl(
   when_star = warning,
   identification_end = NULL,
   identification_estimate.to = NULL,
+  identify_filters = FALSE,
   automdl.enabled = FALSE
 )
 
@@ -37,6 +38,8 @@ That is, the series is shortened by \verb{window(series,} \verb{end = identifica
 
 \item{identification_estimate.to}{To set \code{\link{x13_spec}} parameter \code{estimate.to} before runs used to identify (arima) parameters.
 This is an alternative to  \code{identification_end}.}
+
+\item{identify_filters}{When \code{TRUE}, moving average filters are identified by the shortened (see above) series.}
 
 \item{automdl.enabled}{When \code{TRUE}, automdl is performed instead of pickmdl.
 Then, spec can be a single \code{x13_spec} output object (only first is used when list of several).}
@@ -89,6 +92,12 @@ spec_b <- x13_spec_pickmdl(
                                     "2021-06-01", "2021-07-01", "2021-08-01"))
 b <- x13_pickmdl(myseries, spec_b, identification_end = c(2020, 2))                                     
 b$regarima
+
+# Effect of identify_filters
+b2 <- x13_pickmdl(myseries, spec_b, identification_end = c(2010, 2))
+b2$decomposition
+b3 <- x13_pickmdl(myseries, spec_b, identification_end = c(2010, 2), identify_filters = TRUE)
+b3$decomposition
 
 # Warning when transform.function = "None"
 spec_d  <- x13_spec_pickmdl(spec = "RSA3", transform.function = "None")
