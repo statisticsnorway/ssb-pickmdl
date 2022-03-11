@@ -48,10 +48,10 @@ Then, spec can be a single \code{x13_spec} output object (only first is used whe
 
 \item{verbose}{Printing information to console when \code{TRUE}.}
 
-\item{output}{output  One of \code{"sa"} (default), \code{"spec"} (final spec), \code{"sa_spec"} (both) and \code{"all"}. See examples.}
+\item{output}{One of \code{"sa"} (default), \code{"spec"} (final spec), \code{"sa_spec"} (both) and \code{"all"}. See examples.}
 }
 \value{
-An \code{x13} output object
+By default an \code{x13} output object, or otherwise a list as specified by parameter \code{output}.
 }
 \description{
 \code{\link{x13}} is run with a PICKMDL specification

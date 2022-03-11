@@ -17,9 +17,9 @@
 #' @param automdl.enabled When `TRUE`, automdl is performed instead of pickmdl. 
 #'            Then, spec can be a single `x13_spec` output object (only first is used when list of several).
 #' @param verbose Printing information to console when `TRUE`. 
-#' @param output output  One of `"sa"` (default), `"spec"` (final spec), `"sa_spec"` (both) and `"all"`. See examples.        
+#' @param output One of `"sa"` (default), `"spec"` (final spec), `"sa_spec"` (both) and `"all"`. See examples.        
 #'
-#' @return An `x13` output object
+#' @return By default an `x13` output object, or otherwise a list as specified by parameter `output`.
 #' @export
 #' @importFrom stats window
 #'
