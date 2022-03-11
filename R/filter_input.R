@@ -26,9 +26,20 @@
 #' b$decomposition$t_filter
 #' b$decomposition$s_filter
 #' filter_input(b)
-filter_input = function(sa){
-  list( x11.trendma = as.numeric(split_for_filter(sa$decomposition$t_filter)),
-     x11.seasonalma = split_for_filter(sa$decomposition$s_filter))
+filter_input <- function(sa) {
+  x11.trendma <- as.numeric(split_for_filter(sa$decomposition$t_filter))
+  x11.seasonalma <- split_for_filter(sa$decomposition$s_filter)
+  if (is.na(x11.trendma)) {
+    stop("Could not find x11.trendma")
+  }
+  if (x11.trendma < 1) {
+    stop("Could not find correct x11.trendma")
+  }
+  if (substr(x11.seasonalma, 2, 2) %in% c("x", "X")) {
+    x11.seasonalma <- paste0("S", x11.seasonalma)
+    x11.seasonalma <- toupper(x11.seasonalma)
+  }
+  list(x11.trendma = x11.trendma, x11.seasonalma = x11.seasonalma)
 }
 
 split_for_filter = function(s){
