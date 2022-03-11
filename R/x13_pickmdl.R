@@ -16,7 +16,8 @@
 #' @param identify_filters When `TRUE`, moving average filters are identified by the shortened (see above) series.
 #' @param automdl.enabled When `TRUE`, automdl is performed instead of pickmdl. 
 #'            Then, spec can be a single `x13_spec` output object (only first is used when list of several).
-#' @param verbose Printing information to console when `TRUE`.          
+#' @param verbose Printing information to console when `TRUE`. 
+#' @param output output  One of `"sa"` (default), `"spec"` (final spec), `"sa_spec"` (both) and `"all"`. See examples.        
 #'
 #' @return An `x13` output object
 #' @export
@@ -80,13 +81,26 @@
 #' 
 #' # automdl instead  
 #' d3 <- x13_automdl(myseries, spec_d, verbose = TRUE)
-#'                                           
+#'                                      
+#' 
+#' # As a2, with output = "all"
+#' k <- x13_pickmdl(myseries, spec_b, identification_end = c(2010, 2), output = "all")
+#' k$sa$decomposition  # As a2$decomposition 
+#' k$mdl_nr            # index of selected model used to identify parameters
+#' k$sa_mult[[k$mdl_nr]]$decomposition  # decomposition for model to identify
+#' k$crit_tab          # Table of criteria 
 x13_pickmdl <- function(series, spec, ..., 
                         pickmdl_method = "first", star = 1, when_star = warning,
                         identification_end = NULL, identification_estimate.to = NULL, 
                         identify_filters = FALSE, 
                         automdl.enabled = FALSE,
-                        verbose = FALSE) {
+                        verbose = FALSE,
+                        output = "sa") {
+  
+  
+  if(!(output %in% c("sa", "spec", "sa_spec", "all")))
+    stop('Allowed values of parameter output are "sa", "spec", "sa_spec" and "all".')
+  
   
   automdl.enabled <- isTRUE(automdl.enabled)
   
@@ -131,6 +145,10 @@ x13_pickmdl <- function(series, spec, ...,
   
   spec <- spec[[mdl_nr]] 
   
+  if(output == "spec"){
+    return(sa)
+  }
+  
   if(identify_filters){
     filters <- filter_input(sa_mult[[mdl_nr]])
     spec <- x13_spec(spec, x11.trendAuto = FALSE, 
@@ -140,7 +158,18 @@ x13_pickmdl <- function(series, spec, ...,
     }
   }
   
-  x13(series = series, spec = spec, ...)
+  sa <- x13(series = series, spec = spec, ...)
+  
+  
+  if(output == "sa_spec"){
+    return(list(sa = sa, spec = spec))
+  }
+  
+  if(output == "all"){
+    return(list(sa = sa, spec = spec, mdl_nr = mdl_nr, crit_tab = crit_tab, sa_mult = sa_mult))
+  }
+  
+  sa
 }
 
 #' @rdname x13_pickmdl

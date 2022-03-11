@@ -16,7 +16,8 @@ x13_pickmdl(
   identification_estimate.to = NULL,
   identify_filters = FALSE,
   automdl.enabled = FALSE,
-  verbose = FALSE
+  verbose = FALSE,
+  output = "sa"
 )
 
 x13_automdl(..., automdl.enabled = TRUE)
@@ -46,6 +47,8 @@ This is an alternative to  \code{identification_end}.}
 Then, spec can be a single \code{x13_spec} output object (only first is used when list of several).}
 
 \item{verbose}{Printing information to console when \code{TRUE}.}
+
+\item{output}{output  One of \code{"sa"} (default), \code{"spec"} (final spec), \code{"sa_spec"} (both) and \code{"all"}. See examples.}
 }
 \value{
 An \code{x13} output object
@@ -111,5 +114,12 @@ d2 <- x13_pickmdl(myseries, spec_d, star = 2, when_star = NULL, verbose = TRUE)
 
 # automdl instead  
 d3 <- x13_automdl(myseries, spec_d, verbose = TRUE)
-                                          
+                                     
+
+# As a2, with output = "all"
+k <- x13_pickmdl(myseries, spec_b, identification_end = c(2010, 2), output = "all")
+k$sa$decomposition  # As a2$decomposition 
+k$mdl_nr            # index of selected model used to identify parameters
+k$sa_mult[[k$mdl_nr]]$decomposition  # decomposition for model to identify
+k$crit_tab          # Table of criteria 
 }
