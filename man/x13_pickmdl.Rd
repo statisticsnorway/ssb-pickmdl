@@ -2,6 +2,7 @@
 % Please edit documentation in R/x13_pickmdl.R
 \name{x13_pickmdl}
 \alias{x13_pickmdl}
+\alias{x13_automdl}
 \title{x13 with PICKMDL}
 \usage{
 x13_pickmdl(
@@ -11,8 +12,12 @@ x13_pickmdl(
   pickmdl_method = "first",
   star = 1,
   when_star = warning,
-  identification_end = NULL
+  identification_end = NULL,
+  identification_estimate.to = NULL,
+  automdl.enabled = FALSE
 )
+
+x13_automdl(..., automdl.enabled = TRUE)
 }
 \arguments{
 \item{series}{\code{x13} parameter}
@@ -29,6 +34,12 @@ x13_pickmdl(
 
 \item{identification_end}{To shorten the series before runs used to identify (arima) parameters.
 That is, the series is shortened by \verb{window(series,} \verb{end = identification_end)}.}
+
+\item{identification_estimate.to}{To set \code{\link{x13_spec}} parameter \code{estimate.to} before runs used to identify (arima) parameters.
+This is an alternative to  \code{identification_end}.}
+
+\item{automdl.enabled}{When \code{TRUE}, automdl is performed instead of pickmdl.
+Then, spec can be a single \code{x13_spec} output object (only first is used when list of several).}
 }
 \value{
 An \code{x13} output object
@@ -46,6 +57,18 @@ a$regarima
 
 a2 <- x13_pickmdl(myseries, spec_a, identification_end = c(2014, 2))
 a2$regarima
+
+# As above, another way
+a3 <- x13_pickmdl(myseries, spec_a, identification_estimate.to = "2014-03-01")
+a3$regarima
+
+a4 <- x13_automdl(myseries, spec_a, identification_end = c(2014, 2))
+a4$regarima
+
+# As above, another way
+spec_a_single  <- x13_spec(spec = "RSA3", transform.function = "Log")
+a5 <- x13_automdl(myseries, spec_a_single, identification_estimate.to = "2014-03-01")
+a5$regarima
 
 allvar <- pickmdl_data("allvar")
 
@@ -73,7 +96,11 @@ d <- x13_pickmdl(myseries, spec_d)
 d$regarima 
 
 # Warning avoided (when_star) and 2nd (star) model selected 
-e <- x13_pickmdl(myseries, spec_d, star = 2, when_star = NULL)
-e$regarima   
+d2 <- x13_pickmdl(myseries, spec_d, star = 2, when_star = NULL)
+d2$regarima  
+
+# automdl instead  
+d3 <- x13_automdl(myseries, spec_d)
+d3$regarima     
                                           
 }

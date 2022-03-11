@@ -11,6 +11,10 @@
 #' @param when_star      \code{\link{crit_selection}} parameter
 #' @param identification_end To shorten the series before runs used to identify (arima) parameters.
 #'            That is, the series is shortened by `window(series,` `end = identification_end)`.
+#' @param identification_estimate.to   To set \code{\link{x13_spec}} parameter `estimate.to` before runs used to identify (arima) parameters.  
+#'            This is an alternative to  `identification_end`.
+#' @param automdl.enabled When `TRUE`, automdl is performed instead of pickmdl. 
+#'            Then, spec can be a single `x13_spec` output object (only first is used when list of several). 
 #'
 #' @return An `x13` output object
 #' @export
@@ -26,6 +30,18 @@
 #' 
 #' a2 <- x13_pickmdl(myseries, spec_a, identification_end = c(2014, 2))
 #' a2$regarima
+#' 
+#' # As above, another way
+#' a3 <- x13_pickmdl(myseries, spec_a, identification_estimate.to = "2014-03-01")
+#' a3$regarima
+#' 
+#' a4 <- x13_automdl(myseries, spec_a, identification_end = c(2014, 2))
+#' a4$regarima
+#' 
+#' # As above, another way
+#' spec_a_single  <- x13_spec(spec = "RSA3", transform.function = "Log")
+#' a5 <- x13_automdl(myseries, spec_a_single, identification_estimate.to = "2014-03-01")
+#' a5$regarima
 #' 
 #' allvar <- pickmdl_data("allvar")
 #' 
@@ -53,25 +69,62 @@
 #' d$regarima 
 #' 
 #' # Warning avoided (when_star) and 2nd (star) model selected 
-#' e <- x13_pickmdl(myseries, spec_d, star = 2, when_star = NULL)
-#' e$regarima   
+#' d2 <- x13_pickmdl(myseries, spec_d, star = 2, when_star = NULL)
+#' d2$regarima  
+#' 
+#' # automdl instead  
+#' d3 <- x13_automdl(myseries, spec_d)
+#' d3$regarima     
 #'                                           
 x13_pickmdl <- function(series, spec, ..., 
                         pickmdl_method = "first", star = 1, when_star = warning,
-                        identification_end = NULL) {
+                        identification_end = NULL, identification_estimate.to = NULL, 
+                        automdl.enabled = FALSE) {
   
-  if (!all(apply(sapply(spec, class),1, unique) == c("SA_spec", "X13"))) {
-    stop("`spec` must be a list of `x13_spec` output objects. Run `x13_spec_pickmdl`?")
+  automdl.enabled <- isTRUE(automdl.enabled)
+  
+  if (!all(apply(sapply(spec, class), 1, unique) == c("SA_spec", "X13"))) {
+    if (automdl.enabled) {
+      if (!all(class(spec) == c("SA_spec", "X13"))) {
+        stop("Wrong `spec` input")
+      }
+      spec <- list(spec)
+    } else {
+      stop("`spec` must be a list of `x13_spec` output objects. Run `x13_spec_pickmdl`?")
+    }
   }
   
-  sa_mult <- x13_multi(series = window(series, end = identification_end), spec = spec, ...)
+  if (automdl.enabled) {
+    spec <- spec[1]
+    spec[[1]] <- x13_spec(spec[[1]], automdl.enabled = TRUE)
+  }
   
-  crit_tab <- crit_table(sa_mult)
+  if (is.null(identification_estimate.to)) {
+    sa_mult <- x13_multi(series = window(series, end = identification_end), spec = spec, ...)
+  } else {
+    sa_mult <- x13_multi(series = window(series, end = identification_end), 
+                         spec = lapply(spec, x13_spec, estimate.to = identification_estimate.to), ...)
+  }
   
-  mdl_nr <- crit_selection(crit_tab, pickmdl_method = pickmdl_method, 
-                           star = star, when_star = when_star)
+  if (automdl.enabled) {
+    arma <- as.numeric(sa_mult[[1]]$regarima$arma)
+    spec[[1]] <- x13_spec(spec[[1]], arima.p = arma["p"], arima.d = arma["d"], arima.q = arma["q"], 
+                          arima.bp = arma["bp"], arima.bd = arma["bd"], arima.bq = arma["bq"])
+    crit_tab <- NULL
+    mdl_nr <- 1
+  } else {
+    crit_tab <- crit_table(sa_mult)
+    
+    mdl_nr <- crit_selection(crit_tab, pickmdl_method = pickmdl_method, star = star, when_star = when_star)
+  }
   
   x13(series = series, spec = spec[[mdl_nr]], ...)
+}
+
+#' @rdname x13_pickmdl
+#' @export
+x13_automdl <- function(..., automdl.enabled = TRUE){
+  x13_pickmdl(..., automdl.enabled = automdl.enabled)
 }
 
 
