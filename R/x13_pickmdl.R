@@ -128,9 +128,16 @@ x13_pickmdl <- function(series, spec, ...,
   }
   
   if (automdl.enabled) {
-    arma <- as.numeric(sa_mult[[1]]$regarima$arma)
-    spec[[1]] <- x13_spec(spec[[1]], arima.p = arma["p"], arima.d = arma["d"], arima.q = arma["q"], 
-                          arima.bp = arma["bp"], arima.bd = arma["bd"], arima.bq = arma["bq"])
+    arma <- sa_mult[[1]]$regarima$arma  # as.numeric remove names, as.numeric needed? can be factors?  
+    spec[[1]] <- x13_spec(spec[[1]], 
+                          arima.p = as.numeric(arma["p"]), 
+                          arima.d = as.numeric(arma["d"]), 
+                          arima.q = as.numeric(arma["q"]), 
+                          arima.bp = as.numeric(arma["bp"]), 
+                          arima.bd = as.numeric(arma["bd"]), 
+                          arima.bq = as.numeric(arma["bq"]),
+                          automdl.enabled = FALSE)
+    print(s_arima(spec[[1]]))
     crit_tab <- NULL
     mdl_nr <- 1
   } else {
