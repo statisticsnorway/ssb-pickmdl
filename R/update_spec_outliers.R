@@ -1,12 +1,57 @@
+#' Update x13 spec with outliers 
+#' 
+#' Update an `x13_spec` output object with outliers from an `x13` output object.
+#'
+#' @param spec An \code{\link{x13_spec}} output object 
+#' @param sa   An \code{\link{x13}} output object
+#' @param day Day of month as character to be used in outlier coding 
+#'
+#' @return `update_spec_outliers` returns an updated `x13_spec` output object with
+#'          new outliers and updated `outlier.from`.  
+#'         `update_outliers` returns a data frame with outlier variables used to update. 
+#' @export
+#' @importFrom stats end frequency
+#' @importFrom RJDemetra s_span s_preOut
+#'
+#' @examples
+#' myseries <- ipi_c_eu[, "FR"]
+#' 
+#' spec_1 <- x13_spec(spec = "RSA3", transform.function = "None", usrdef.outliersEnabled = TRUE, 
+#'                    usrdef.outliersType = "AO", usrdef.outliersDate = "2007-03-01", 
+#'                    outlier.usedefcv = FALSE, outlier.cv = 3)
+#'                    
+#' spec_2 <- x13_spec(spec_1, estimate.to = "2018-08-01")
+#' 
+#' a <- x13(myseries, spec_2)
+#' 
+#' update_outliers(spec_1, a)
+#' 
+#' spec_3 <- update_spec_outliers(spec_1, a)
+#' 
+#' s_span(spec_1)
+#' s_span(spec_2)
+#' s_span(spec_3)
+#' 
+#' s_preOut(spec_1)
+#' s_preOut(spec_2)
+#' s_preOut(spec_3)
 update_spec_outliers <- function(spec, sa, day = "01") {
   
-  if (frequency(sa$final$forecasts) != 12) {
+  freq = frequency(sa$final$series)
+  
+  if (freq  != 12) {
     stop("Only frequency==12 implemented")
   }
   
+  # sa$regarima$model$spec_rslt$T.span is "dangerous" hack
+  # but general solution (s_span(sa) is not and end of series is not)
+  end_span = strsplit(sa$regarima$model$spec_rslt$T.span, split="to ")[[1]][2]
   
-  start_ <- start(sa$final$forecasts)
-  from_ <- sub(".", "-", sprintf("%7.2f", (start_[1] + start_[2]/100)), fixed = TRUE)
+  end_span_integer = rev(as.integer(strsplit(end_span, split = "-")[[1]]))
+  
+  new_from_integer = end(ts(1:2, start = end_span_integer, frequency = freq))
+  
+  from_ <- sub(".", "-", sprintf("%7.2f", (new_from_integer[1] + new_from_integer[2]/100)), fixed = TRUE)
   new_outlier.from <- paste(from_, day, sep = "-")
   
   
@@ -24,17 +69,18 @@ update_spec_outliers <- function(spec, sa, day = "01") {
   
   updated <- update_outliers(spec = spec, sa = sa, day = day, null_when_no_new = TRUE)
   
-  cat("\n")
   
   if (is.null(updated)) {
     return(spec)
   }
   
-  x13_spec(spec, usrdef.outliersType = updated$type, usrdef.outliersDate = updated$date)
+  x13_spec(spec, usrdef.outliersEnabled = TRUE, usrdef.outliersType = updated$type, usrdef.outliersDate = updated$date)
   
 }
 
-
+#' @rdname update_spec_outliers
+#' @param null_when_no_new Whether to return `NULL` when no new outliers found. 
+#' @export
 update_outliers <- function(spec, sa, day = "01", null_when_no_new = TRUE) {
   
   pre <- s_preOut(spec)
@@ -53,13 +99,17 @@ update_outliers <- function(spec, sa, day = "01", null_when_no_new = TRUE) {
   
   sa_o <- sa_out(sa)
   
-  sa_o <- sa_o[!(sa_o$date %in% substr(pre$date, 1, 7)), , drop = FALSE]
+  if (length(sa_o)) {
+    sa_o <- sa_o[!(sa_o$date %in% substr(pre$date, 1, 7)), , drop = FALSE]
+  } else {
+    sa_o <- matrix(0, 0, 0)  # nrow is 0
+  }
   
   if (null_when_no_new & !nrow(sa_o)) {
-    cat("  No new outliers.")
+    cat("  No new outliers.+n")
     return(NULL)
   }
-  cat("  New outliers:", paste(sa_o$date, collapse = ", "))
+  cat("  New outliers:", paste(sa_o$date, collapse = ", "), "\n")
   
   sa_o$date <- paste(sa_o$date, day, sep = "-")
   
@@ -80,7 +130,7 @@ sa_out <- function(a) {
   kis3 <- (sapply(k, length) == 3 & grepl("(", s, fixed = TRUE))
   
   if (!sum(kis3)) {
-    return(character(0))
+    return(data.frame(type = character(0), date = character(0)))
   }
   k <- k[kis3]
   year <- as.integer(sapply(k, function(x) x[3]))
@@ -92,3 +142,13 @@ sa_out <- function(a) {
   data.frame(type = type, date = date_mnd)
   
 }
+
+
+
+
+
+
+
+
+
+
