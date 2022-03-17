@@ -107,7 +107,7 @@ update_outliers <- function(spec, sa, day = "01", null_when_no_new = TRUE, verbo
   }
   
   if (null_when_no_new & !nrow(sa_o)) {
-    if(verbose) cat("  No new outliers.+n")
+    if(verbose) cat("  No new outliers.\n")
     return(NULL)
   }
   if(verbose) cat("  New outliers:", paste(sa_o$date, collapse = ", "), "\n")
