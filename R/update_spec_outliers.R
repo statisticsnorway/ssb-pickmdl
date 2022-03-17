@@ -5,6 +5,7 @@
 #' @param spec An \code{\link{x13_spec}} output object 
 #' @param sa   An \code{\link{x13}} output object
 #' @param day Day of month as character to be used in outlier coding 
+#' @param verbose Printing information to console when `TRUE`.
 #'
 #' @return `update_spec_outliers` returns an updated `x13_spec` output object with
 #'          new outliers and updated `outlier.from`.  
@@ -35,7 +36,7 @@
 #' s_preOut(spec_1)
 #' s_preOut(spec_2)
 #' s_preOut(spec_3)
-update_spec_outliers <- function(spec, sa, day = "01") {
+update_spec_outliers <- function(spec, sa, day = "01", verbose = FALSE) {
   
   freq = frequency(sa$final$series)
   
@@ -59,15 +60,15 @@ update_spec_outliers <- function(spec, sa, day = "01") {
   old_outlier.from <- s_span_[rownames(s_span_) == "outlier", "d0"]
   
   if (new_outlier.from <= old_outlier.from) {
-    cat("outlier.from not updated:", old_outlier.from, "\n")
+    if(verbose) cat("outlier.from not updated:", old_outlier.from, "\n")
     return(spec)
   }
   
   spec <- x13_spec(spec, outlier.from = new_outlier.from)
   
-  cat("outlier.from updated:", new_outlier.from)
+  if(verbose) cat("outlier.from updated:", new_outlier.from)
   
-  updated <- update_outliers(spec = spec, sa = sa, day = day, null_when_no_new = TRUE)
+  updated <- update_outliers(spec = spec, sa = sa, day = day, null_when_no_new = TRUE, verbose = verbose)
   
   
   if (is.null(updated)) {
@@ -81,7 +82,7 @@ update_spec_outliers <- function(spec, sa, day = "01") {
 #' @rdname update_spec_outliers
 #' @param null_when_no_new Whether to return `NULL` when no new outliers found. 
 #' @export
-update_outliers <- function(spec, sa, day = "01", null_when_no_new = TRUE) {
+update_outliers <- function(spec, sa, day = "01", null_when_no_new = TRUE, verbose = FALSE) {
   
   pre <- s_preOut(spec)
   
@@ -106,10 +107,10 @@ update_outliers <- function(spec, sa, day = "01", null_when_no_new = TRUE) {
   }
   
   if (null_when_no_new & !nrow(sa_o)) {
-    cat("  No new outliers.+n")
+    if(verbose) cat("  No new outliers.+n")
     return(NULL)
   }
-  cat("  New outliers:", paste(sa_o$date, collapse = ", "), "\n")
+  if(verbose) cat("  New outliers:", paste(sa_o$date, collapse = ", "), "\n")
   
   sa_o$date <- paste(sa_o$date, day, sep = "-")
   

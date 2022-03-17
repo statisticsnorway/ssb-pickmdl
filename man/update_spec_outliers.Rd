@@ -5,9 +5,9 @@
 \alias{update_outliers}
 \title{Update x13 spec with outliers}
 \usage{
-update_spec_outliers(spec, sa, day = "01")
+update_spec_outliers(spec, sa, day = "01", verbose = FALSE)
 
-update_outliers(spec, sa, day = "01", null_when_no_new = TRUE)
+update_outliers(spec, sa, day = "01", null_when_no_new = TRUE, verbose = FALSE)
 }
 \arguments{
 \item{spec}{An \code{\link{x13_spec}} output object}
@@ -15,6 +15,8 @@ update_outliers(spec, sa, day = "01", null_when_no_new = TRUE)
 \item{sa}{An \code{\link{x13}} output object}
 
 \item{day}{Day of month as character to be used in outlier coding}
+
+\item{verbose}{Printing information to console when \code{TRUE}.}
 
 \item{null_when_no_new}{Whether to return \code{NULL} when no new outliers found.}
 }
