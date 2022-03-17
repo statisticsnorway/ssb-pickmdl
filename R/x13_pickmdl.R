@@ -30,7 +30,7 @@
 #' @examples
 #' myseries <- pickmdl_data("myseries")
 #' 
-#' spec_a  <- x13_spec_pickmdl(spec = "RSA3", transform.function = "Log")
+#' spec_a  <- x13_spec(spec = "RSA3", transform.function = "Log")
 #' 
 #' a <- x13_pickmdl(myseries, spec_a, verbose = TRUE)
 #' a$regarima
@@ -52,7 +52,7 @@
 #' 
 #' allvar <- pickmdl_data("allvar")
 #' 
-#' spec_b <- x13_spec_pickmdl(
+#' spec_b <- x13_spec(
 #'             spec = "RSA3", transform.function = "Log",
 #'             usrdef.varEnabled = TRUE, 
 #'             usrdef.varType = c("Calendar", "Calendar"), 
@@ -89,7 +89,7 @@
 #' 
 #' 
 #' # Warning when transform.function = "None"
-#' spec_d  <- x13_spec_pickmdl(spec = "RSA3", transform.function = "None")
+#' spec_d  <- x13_spec(spec = "RSA3", transform.function = "None")
 #' d <- x13_pickmdl(myseries, spec_d, verbose = TRUE)
 #' 
 #' # Warning avoided (when_star) and 2nd (star) model selected 
