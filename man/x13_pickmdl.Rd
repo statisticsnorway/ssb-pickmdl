@@ -3,7 +3,7 @@
 \name{x13_pickmdl}
 \alias{x13_pickmdl}
 \alias{x13_automdl}
-\title{x13 with PICKMDL}
+\title{x13 with PICKMDL and partial concurrent possibilities}
 \usage{
 x13_pickmdl(
   series,
@@ -29,7 +29,7 @@ x13_automdl(..., automdl.enabled = TRUE)
 
 \item{spec}{An \code{\link{x13_spec}} output object or a list of several objects as outputted from \code{\link{x13_spec_pickmdl}}.
 In the case of a single object and when \code{automdl.enabled} is \code{FALSE}, \code{spec} will be converted internally
-by \code{x13_spec_pickmdl} with default arima model specifications.}
+by \code{x13_spec_pickmdl} with default five arima model specifications.}
 
 \item{...}{Further \code{x13} parameters (currently only parameter \code{userdefined} is additional parameter to \code{x13}).}
 
@@ -52,7 +52,7 @@ This is an alternative to  \code{identification_end}.}
 \item{identify_outliers}{When \code{TRUE}, Outliers are identified by the shortened series.}
 
 \item{automdl.enabled}{When \code{TRUE}, automdl is performed instead of pickmdl.
-Then, spec can be a single \code{x13_spec} output object (only first is used when list of several).}
+If \code{spec} is a list of several objects as outputted from \code{x13_spec_pickmdl}, only first object is used.}
 
 \item{verbose}{Printing information to console when \code{TRUE}.}
 
@@ -62,7 +62,8 @@ Then, spec can be a single \code{x13_spec} output object (only first is used whe
 By default an \code{x13} output object, or otherwise a list as specified by parameter \code{output}.
 }
 \description{
-\code{\link{x13}} is run with a PICKMDL specification
+\code{\link{x13}} can be run as usual (automdl) or with a PICKMDL specification.
+The ARIMA model, outliers and filters can be identified at a certain date and then held fixed (with a new outlier-span).
 }
 \examples{
 myseries <- pickmdl_data("myseries")
