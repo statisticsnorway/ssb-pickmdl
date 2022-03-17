@@ -4,7 +4,9 @@
 #' \code{\link{x13}} is run with a PICKMDL specification
 #' 
 #' @param series `x13` parameter
-#' @param spec List of several `x13_spec` output objects. That is, `spec` can be output from  \code{\link{x13_spec_pickmdl}}.
+#' @param spec An \code{\link{x13_spec}} output object or a list of several objects as outputted from \code{\link{x13_spec_pickmdl}}. 
+#'             In the case of a single object and when `automdl.enabled` is `FALSE`, `spec` will be converted internally 
+#'             by `x13_spec_pickmdl` with default arima model specifications. 
 #' @param ... Further `x13` parameters (currently only parameter `userdefined` is additional parameter to `x13`).
 #' @param pickmdl_method \code{\link{crit_selection}} parameter
 #' @param star           \code{\link{crit_selection}} parameter
@@ -13,7 +15,8 @@
 #'            That is, the series is shortened by `window(series,` `end = identification_end)`.
 #' @param identification_estimate.to   To set \code{\link{x13_spec}} parameter `estimate.to` before runs used to identify (arima) parameters.  
 #'            This is an alternative to  `identification_end`.
-#' @param identify_filters When `TRUE`, moving average filters are identified by the shortened (see above) series.
+#' @param identify_t_filter When `TRUE`,  Henderson trend filter is identified by the shortened (see above) series.
+#' @param identify_s_filter When `TRUE`,  Seasonal moving average filter is identified by the shortened series.
 #' @param automdl.enabled When `TRUE`, automdl is performed instead of pickmdl. 
 #'            Then, spec can be a single `x13_spec` output object (only first is used when list of several).
 #' @param verbose Printing information to console when `TRUE`. 
@@ -66,11 +69,23 @@
 #' b <- x13_pickmdl(myseries, spec_b, identification_end = c(2020, 2))                                     
 #' b$regarima
 #' 
-#' # Effect of identify_filters
-#' b2 <- x13_pickmdl(myseries, spec_b, identification_end = c(2010, 2))
-#' b2$decomposition
-#' b3 <- x13_pickmdl(myseries, spec_b, identification_end = c(2010, 2), identify_filters = TRUE)
-#' b3$decomposition
+#' # automdl instead  
+#' b1 <- x13_automdl(myseries, spec_b, identification_end = c(2020, 2))
+#' b1$regarima
+#' 
+#' # effect of identify_filters
+#' set.seed(1)
+#' rndseries <- ts(rep(1:12, 20) + (1 + (1:240)/20) * runif(240) + 0.5 * c(rep(1, 120), (1:120)^2), 
+#'                 frequency = 12, start = c(2000, 1))
+#' spec_c <- x13_spec(outlier.enabled = FALSE)               
+#' c1 <- x13_automdl(rndseries, spec_c, identification_end = c(2009, 12))    
+#' c1$decomposition
+#' c2 <- x13_automdl(rndseries, spec_c, identification_end = c(2009, 12), identify_t_filter = TRUE) 
+#' c2$decomposition
+#' c3 <- x13_automdl(rndseries, spec_c, identification_end = c(2009, 12), identify_t_filter = TRUE, 
+#'                   identify_s_filter = TRUE)     
+#' c3$decomposition                       
+#' 
 #' 
 #' # Warning when transform.function = "None"
 #' spec_d  <- x13_spec_pickmdl(spec = "RSA3", transform.function = "None")
@@ -79,9 +94,6 @@
 #' # Warning avoided (when_star) and 2nd (star) model selected 
 #' d2 <- x13_pickmdl(myseries, spec_d, star = 2, when_star = NULL, verbose = TRUE)
 #' 
-#' # automdl instead  
-#' d3 <- x13_automdl(myseries, spec_d, verbose = TRUE)
-#'                                      
 #' 
 #' # As a2, with output = "all"
 #' k <- x13_pickmdl(myseries, spec_b, identification_end = c(2010, 2), output = "all")
@@ -92,7 +104,7 @@
 x13_pickmdl <- function(series, spec, ..., 
                         pickmdl_method = "first", star = 1, when_star = warning,
                         identification_end = NULL, identification_estimate.to = NULL, 
-                        identify_filters = FALSE, 
+                        identify_t_filter = FALSE, identify_s_filter = FALSE, 
                         automdl.enabled = FALSE,
                         verbose = FALSE,
                         output = "sa") {
@@ -101,17 +113,16 @@ x13_pickmdl <- function(series, spec, ...,
   if(!(output %in% c("sa", "spec", "sa_spec", "all")))
     stop('Allowed values of parameter output are "sa", "spec", "sa_spec" and "all".')
   
-  
   automdl.enabled <- isTRUE(automdl.enabled)
   
   if (!all(apply(sapply(spec, class), 1, unique) == c("SA_spec", "X13"))) {
+    if (!all(class(spec) == c("SA_spec", "X13"))) {
+      stop("Wrong `spec` input")
+    }
     if (automdl.enabled) {
-      if (!all(class(spec) == c("SA_spec", "X13"))) {
-        stop("Wrong `spec` input")
-      }
       spec <- list(spec)
     } else {
-      stop("`spec` must be a list of `x13_spec` output objects. Run `x13_spec_pickmdl`?")
+      spec <- x13_spec_pickmdl(spec)
     }
   }
   
@@ -137,7 +148,6 @@ x13_pickmdl <- function(series, spec, ...,
                           arima.bd = as.numeric(arma["bd"]), 
                           arima.bq = as.numeric(arma["bq"]),
                           automdl.enabled = FALSE)
-    print(s_arima(spec[[1]]))
     crit_tab <- NULL
     mdl_nr <- 1
   } else {
@@ -156,12 +166,16 @@ x13_pickmdl <- function(series, spec, ...,
     return(sa)
   }
   
-  if(identify_filters){
+  if (identify_t_filter | identify_s_filter) {
     filters <- filter_input(sa_mult[[mdl_nr]])
-    spec <- x13_spec(spec, x11.trendAuto = FALSE, 
-                     x11.trendma = filters[["x11.trendma"]], x11.seasonalma = filters[["x11.seasonalma"]])
-    if(verbose){
-      print(unlist(filters), quote = FALSE)
+    if (identify_t_filter) {
+      spec <- x13_spec(spec, x11.trendAuto = FALSE, x11.trendma = filters[["x11.trendma"]])
+    }
+    if (identify_s_filter) {
+      spec <- x13_spec(spec, x11.seasonalma = filters[["x11.seasonalma"]])
+    }
+    if (verbose) {
+      print(unlist(filters)[c(identify_t_filter, identify_s_filter)], quote = FALSE)
     }
   }
   
