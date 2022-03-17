@@ -33,3 +33,4 @@ generatePDF.bat
 eksempelkode.R
 pickmdl.pdf
 pickmdl_source.R
+generate_pickmdl_source.R
