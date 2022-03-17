@@ -15,8 +15,9 @@
 #'            That is, the series is shortened by `window(series,` `end = identification_end)`.
 #' @param identification_estimate.to   To set \code{\link{x13_spec}} parameter `estimate.to` before runs used to identify (arima) parameters.  
 #'            This is an alternative to  `identification_end`.
-#' @param identify_t_filter When `TRUE`,  Henderson trend filter is identified by the shortened (see above) series.
-#' @param identify_s_filter When `TRUE`,  Seasonal moving average filter is identified by the shortened series.
+#' @param identify_t_filter When `TRUE`, Henderson trend filter is identified by the shortened (see above) series.
+#' @param identify_s_filter When `TRUE`, Seasonal moving average filter is identified by the shortened series.
+#' @param identify_outliers When `TRUE`, Outliers are identified by the shortened series.
 #' @param automdl.enabled When `TRUE`, automdl is performed instead of pickmdl. 
 #'            Then, spec can be a single `x13_spec` output object (only first is used when list of several).
 #' @param verbose Printing information to console when `TRUE`. 
@@ -73,7 +74,7 @@
 #' b1 <- x13_automdl(myseries, spec_b, identification_end = c(2020, 2))
 #' b1$regarima
 #' 
-#' # effect of identify_filters
+#' # effect of identify_t_filter and identify_s_filter
 #' set.seed(1)
 #' rndseries <- ts(rep(1:12, 20) + (1 + (1:240)/20) * runif(240) + 0.5 * c(rep(1, 120), (1:120)^2), 
 #'                 frequency = 12, start = c(2000, 1))
@@ -101,10 +102,25 @@
 #' k$mdl_nr            # index of selected model used to identify parameters
 #' k$sa_mult[[k$mdl_nr]]$decomposition  # decomposition for model to identify
 #' k$crit_tab          # Table of criteria 
+#' 
+#' 
+#' # Effect of identify_outliers
+#' q1 <- x13_pickmdl(myseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
+#'                   identification_end = c(2010, 2))
+#' q2 <- x13_pickmdl(myseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
+#'                   identification_end = c(2010, 2), identify_outliers = TRUE, 
+#'                   verbose = TRUE, output = "all")
+#' q3 <- x13_pickmdl(myseries, q2$spec, identification_end = c(2018, 2), identify_outliers = TRUE, 
+#'                   verbose = TRUE)
+#' 
+#' q1$regarima
+#' q2$sa$regarima
+#' q3$regarima
 x13_pickmdl <- function(series, spec, ..., 
                         pickmdl_method = "first", star = 1, when_star = warning,
                         identification_end = NULL, identification_estimate.to = NULL, 
                         identify_t_filter = FALSE, identify_s_filter = FALSE, 
+                        identify_outliers = FALSE,
                         automdl.enabled = FALSE,
                         verbose = FALSE,
                         output = "sa") {
@@ -177,6 +193,10 @@ x13_pickmdl <- function(series, spec, ...,
     if (verbose) {
       print(unlist(filters)[c(identify_t_filter, identify_s_filter)], quote = FALSE)
     }
+  }
+  
+  if (identify_outliers) {
+      spec <- update_spec_outliers(spec, sa_mult[[mdl_nr]], verbose = verbose)
   }
   
   sa <- x13(series = series, spec = spec, ...)

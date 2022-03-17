@@ -16,6 +16,7 @@ x13_pickmdl(
   identification_estimate.to = NULL,
   identify_t_filter = FALSE,
   identify_s_filter = FALSE,
+  identify_outliers = FALSE,
   automdl.enabled = FALSE,
   verbose = FALSE,
   output = "sa"
@@ -44,9 +45,11 @@ That is, the series is shortened by \verb{window(series,} \verb{end = identifica
 \item{identification_estimate.to}{To set \code{\link{x13_spec}} parameter \code{estimate.to} before runs used to identify (arima) parameters.
 This is an alternative to  \code{identification_end}.}
 
-\item{identify_t_filter}{When \code{TRUE},  Henderson trend filter is identified by the shortened (see above) series.}
+\item{identify_t_filter}{When \code{TRUE}, Henderson trend filter is identified by the shortened (see above) series.}
 
-\item{identify_s_filter}{When \code{TRUE},  Seasonal moving average filter is identified by the shortened series.}
+\item{identify_s_filter}{When \code{TRUE}, Seasonal moving average filter is identified by the shortened series.}
+
+\item{identify_outliers}{When \code{TRUE}, Outliers are identified by the shortened series.}
 
 \item{automdl.enabled}{When \code{TRUE}, automdl is performed instead of pickmdl.
 Then, spec can be a single \code{x13_spec} output object (only first is used when list of several).}
@@ -108,7 +111,7 @@ b$regarima
 b1 <- x13_automdl(myseries, spec_b, identification_end = c(2020, 2))
 b1$regarima
 
-# effect of identify_filters
+# effect of identify_t_filter and identify_s_filter
 set.seed(1)
 rndseries <- ts(rep(1:12, 20) + (1 + (1:240)/20) * runif(240) + 0.5 * c(rep(1, 120), (1:120)^2), 
                 frequency = 12, start = c(2000, 1))
@@ -136,4 +139,18 @@ k$sa$decomposition  # As a2$decomposition
 k$mdl_nr            # index of selected model used to identify parameters
 k$sa_mult[[k$mdl_nr]]$decomposition  # decomposition for model to identify
 k$crit_tab          # Table of criteria 
+
+
+# Effect of identify_outliers
+q1 <- x13_pickmdl(myseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
+                  identification_end = c(2010, 2))
+q2 <- x13_pickmdl(myseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
+                  identification_end = c(2010, 2), identify_outliers = TRUE, 
+                  verbose = TRUE, output = "all")
+q3 <- x13_pickmdl(myseries, q2$spec, identification_end = c(2018, 2), identify_outliers = TRUE, 
+                  verbose = TRUE)
+
+q1$regarima
+q2$sa$regarima
+q3$regarima
 }
