@@ -59,6 +59,10 @@ update_spec_outliers <- function(spec, sa, day = "01", verbose = FALSE) {
   s_span_ <- s_span(spec)
   old_outlier.from <- s_span_[rownames(s_span_) == "outlier", "d0"]
   
+  if (is.na(old_outlier.from)){
+    old_outlier.from <- "0000-00-00"  ## To be used in comparison below 
+  }
+  
   if (new_outlier.from <= old_outlier.from) {
     if(verbose) cat("outlier.from not updated:", old_outlier.from, "\n")
     return(spec)
