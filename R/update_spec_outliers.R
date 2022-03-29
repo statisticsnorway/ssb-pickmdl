@@ -59,6 +59,9 @@ update_spec_outliers <- function(spec, sa, day = "01", verbose = FALSE) {
   s_span_ <- s_span(spec)
   old_outlier.from <- s_span_[rownames(s_span_) == "outlier", "d0"]
   
+  # as.character to avoid "‘<=’ not meaningful for factors" in old r versions 
+  old_outlier.from <- as.character(old_outlier.from)   
+  
   if (is.na(old_outlier.from)){
     old_outlier.from <- "0000-00-00"  ## To be used in comparison below 
   }
@@ -74,12 +77,12 @@ update_spec_outliers <- function(spec, sa, day = "01", verbose = FALSE) {
   
   updated <- update_outliers(spec = spec, sa = sa, day = day, null_when_no_new = TRUE, verbose = verbose)
   
-  
   if (is.null(updated)) {
     return(spec)
   }
   
-  x13_spec(spec, usrdef.outliersEnabled = TRUE, usrdef.outliersType = updated$type, usrdef.outliersDate = updated$date)
+  # as.character for old r versions 
+  x13_spec(spec, usrdef.outliersEnabled = TRUE, usrdef.outliersType = as.character(updated$type), usrdef.outliersDate = as.character(updated$date))
   
 }
 
@@ -90,12 +93,17 @@ update_outliers <- function(spec, sa, day = "01", null_when_no_new = TRUE, verbo
   
   pre <- s_preOut(spec)
   
+  
+  if(is.data.frame(pre)){
+    pre <- ForceCharacterDataFrame(pre) # for old r versions 
+  }
+  
   if (!length(nrow(pre))) {
     pre <- matrix(0, 0, 0)  # nrow is 0
   }
   
   if (!nrow(pre)) {  # when nrow is 0
-    pre <- data.frame(type = character(0), date = character(0))
+    pre <- data.frame(type = character(0), date = character(0), stringsAsFactors = FALSE) # stringsAsFactors for old r versions 
   } else {
     pre <- pre[, c("type", "date")]
   }
@@ -135,7 +143,7 @@ sa_out <- function(a) {
   kis3 <- (sapply(k, length) == 3 & grepl("(", s, fixed = TRUE))
   
   if (!sum(kis3)) {
-    return(data.frame(type = character(0), date = character(0)))
+    return(data.frame(type = character(0), date = character(0), stringsAsFactors = FALSE)) # stringsAsFactors for old r versions 
   }
   k <- k[kis3]
   year <- as.integer(sapply(k, function(x) x[3]))
@@ -144,13 +152,18 @@ sa_out <- function(a) {
   
   type <- trimws(sapply(k, function(x) x[1]))
   
-  data.frame(type = type, date = date_mnd)
+  data.frame(type = type, date = date_mnd, stringsAsFactors = FALSE) # stringsAsFactors for old r versions 
   
 }
 
 
 
-
+#SSBtools::ForceCharacterDataFrame
+ForceCharacterDataFrame <- function(x) {
+  for (i in seq_len(NCOL(x))) if (is.factor(x[, i, drop =TRUE])) 
+    x[, i] <- as.character(x[, i, drop =TRUE])
+  x
+}
 
 
 
