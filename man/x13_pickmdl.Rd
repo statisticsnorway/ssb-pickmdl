@@ -2,36 +2,95 @@
 % Please edit documentation in R/x13_pickmdl.R
 \name{x13_pickmdl}
 \alias{x13_pickmdl}
-\title{x13 with PICKMDL}
+\alias{x13_automdl}
+\title{x13 with PICKMDL and partial concurrent possibilities}
 \usage{
-x13_pickmdl(series, spec, ..., pickmdl_method = "first")
+x13_pickmdl(
+  series,
+  spec,
+  ...,
+  pickmdl_method = "first",
+  star = 1,
+  when_star = warning,
+  identification_end = NULL,
+  identification_estimate.to = NULL,
+  identify_t_filter = FALSE,
+  identify_s_filter = FALSE,
+  identify_outliers = FALSE,
+  automdl.enabled = FALSE,
+  verbose = FALSE,
+  output = "sa"
+)
+
+x13_automdl(..., automdl.enabled = TRUE)
 }
 \arguments{
 \item{series}{\code{x13} parameter}
 
-\item{spec}{List of several \code{x13_spec} output objects. That is, \code{spec} can be output from  \code{\link{x13_spec_pickmdl}}.}
+\item{spec}{An \code{\link{x13_spec}} output object or a list of several objects as outputted from \code{\link{x13_spec_pickmdl}}.
+In the case of a single object and when \code{automdl.enabled} is \code{FALSE}, \code{spec} will be converted internally
+by \code{x13_spec_pickmdl} with default five arima model specifications.}
 
 \item{...}{Further \code{x13} parameters (currently only parameter \code{userdefined} is additional parameter to \code{x13}).}
 
 \item{pickmdl_method}{\code{\link{crit_selection}} parameter}
+
+\item{star}{\code{\link{crit_selection}} parameter}
+
+\item{when_star}{\code{\link{crit_selection}} parameter}
+
+\item{identification_end}{To shorten the series before runs used to identify (arima) parameters.
+That is, the series is shortened by \verb{window(series,} \verb{end = identification_end)}.}
+
+\item{identification_estimate.to}{To set \code{\link{x13_spec}} parameter \code{estimate.to} before runs used to identify (arima) parameters.
+This is an alternative to  \code{identification_end}.}
+
+\item{identify_t_filter}{When \code{TRUE}, Henderson trend filter is identified by the shortened (see above) series.}
+
+\item{identify_s_filter}{When \code{TRUE}, Seasonal moving average filter is identified by the shortened series.}
+
+\item{identify_outliers}{When \code{TRUE}, Outliers are identified by the shortened series.}
+
+\item{automdl.enabled}{When \code{TRUE}, automdl is performed instead of pickmdl.
+If \code{spec} is a list of several objects as outputted from \code{x13_spec_pickmdl}, only first object is used.}
+
+\item{verbose}{Printing information to console when \code{TRUE}.}
+
+\item{output}{One of \code{"sa"} (default), \code{"spec"} (final spec), \code{"sa_spec"} (both) and \code{"all"}. See examples.}
 }
 \value{
-An \code{x13} output object
+By default an \code{x13} output object, or otherwise a list as specified by parameter \code{output}.
 }
 \description{
-\code{\link{x13}} is run with a PICKMDL specification
+\code{\link{x13}} can be run as usual (automdl) or with a PICKMDL specification.
+The ARIMA model, outliers and filters can be identified at a certain date and then held fixed (with a new outlier-span).
 }
 \examples{
 myseries <- pickmdl_data("myseries")
 
-spec_a  <- x13_spec_pickmdl(spec = "RSA3", transform.function = "Log")
+spec_a  <- x13_spec(spec = "RSA3", transform.function = "Log")
 
-a <- x13_pickmdl(myseries, spec_a)
+a <- x13_pickmdl(myseries, spec_a, verbose = TRUE)
 a$regarima
+
+a2 <- x13_pickmdl(myseries, spec_a, identification_end = c(2014, 2))
+a2$regarima
+
+# As above, another way
+a3 <- x13_pickmdl(myseries, spec_a, identification_estimate.to = "2014-03-01")
+a3$regarima
+
+a4 <- x13_automdl(myseries, spec_a, identification_end = c(2014, 2))
+a4$regarima
+
+# As above, another way
+spec_a_single  <- x13_spec(spec = "RSA3", transform.function = "Log")
+a5 <- x13_automdl(myseries, spec_a_single, identification_estimate.to = "2014-03-01")
+a5$regarima
 
 allvar <- pickmdl_data("allvar")
 
-spec_b <- x13_spec_pickmdl(
+spec_b <- x13_spec(
             spec = "RSA3", transform.function = "Log",
             usrdef.varEnabled = TRUE, 
             usrdef.varType = c("Calendar", "Calendar"), 
@@ -46,11 +105,53 @@ spec_b <- x13_spec_pickmdl(
                                     "2020-12-01", "2021-01-01", "2021-02-01",
                                     "2021-03-01", "2021-04-01", "2021-05-01",
                                     "2021-06-01", "2021-07-01", "2021-08-01"))
-b <- x13_pickmdl(myseries, spec_b)                                     
+b <- x13_pickmdl(myseries, spec_b, identification_end = c(2020, 2))                                     
 b$regarima
 
+# automdl instead  
+b1 <- x13_automdl(myseries, spec_b, identification_end = c(2020, 2))
+b1$regarima
+
+# effect of identify_t_filter and identify_s_filter
+set.seed(1)
+rndseries <- ts(rep(1:12, 20) + (1 + (1:240)/20) * runif(240) + 0.5 * c(rep(1, 120), (1:120)^2), 
+                frequency = 12, start = c(2000, 1))
+spec_c <- x13_spec(outlier.enabled = FALSE)               
+c1 <- x13_automdl(rndseries, spec_c, identification_end = c(2009, 12))    
+c1$decomposition
+c2 <- x13_automdl(rndseries, spec_c, identification_end = c(2009, 12), identify_t_filter = TRUE) 
+c2$decomposition
+c3 <- x13_automdl(rndseries, spec_c, identification_end = c(2009, 12), identify_t_filter = TRUE, 
+                  identify_s_filter = TRUE)     
+c3$decomposition                       
+
+
 # Warning when transform.function = "None"
-spec_d  <- x13_spec_pickmdl(spec = "RSA3", transform.function = "None")
-d <- x13_pickmdl(myseries, spec_d) 
-                                          
+spec_d  <- x13_spec(spec = "RSA3", transform.function = "None")
+d <- x13_pickmdl(myseries, spec_d, verbose = TRUE)
+
+# Warning avoided (when_star) and 2nd (star) model selected 
+d2 <- x13_pickmdl(myseries, spec_d, star = 2, when_star = NULL, verbose = TRUE)
+
+
+# As a2, with output = "all"
+k <- x13_pickmdl(myseries, spec_b, identification_end = c(2010, 2), output = "all")
+k$sa$decomposition  # As a2$decomposition 
+k$mdl_nr            # index of selected model used to identify parameters
+k$sa_mult[[k$mdl_nr]]$decomposition  # decomposition for model to identify
+k$crit_tab          # Table of criteria 
+
+
+# Effect of identify_outliers
+q1 <- x13_pickmdl(myseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
+                  identification_end = c(2010, 2))
+q2 <- x13_pickmdl(myseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
+                  identification_end = c(2010, 2), identify_outliers = TRUE, 
+                  verbose = TRUE, output = "all")
+q3 <- x13_pickmdl(myseries, q2$spec, identification_end = c(2018, 2), identify_outliers = TRUE, 
+                  verbose = TRUE)
+
+q1$regarima
+q2$sa$regarima
+q3$regarima
 }
