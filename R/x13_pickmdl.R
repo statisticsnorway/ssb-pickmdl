@@ -199,7 +199,7 @@ x13_pickmdl <- function(series, spec, ...,
   }
   
   if(output == "spec"){
-    return(sa)
+    return(spec)
   }
   
   sa <- x13(series = series, spec = spec, ...)
