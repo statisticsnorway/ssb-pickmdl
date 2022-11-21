@@ -28,6 +28,7 @@
 #' outABC <- x13_text_frame(tf, series = "seriesABC", spec = "RSA3", transform.function = "Log", verbose = TRUE)
 #' 
 x13_text_frame <- function(text_frame, series = NULL, id = NULL, ..., drop = TRUE, verbose = FALSE, dots2list = TRUE) {
+  text_frame <- character_frame(text_frame)
   if (dots2list) {
     sys_call <- sys.call()
     if (any(sapply(sys_call, function(x) identical(x, as.name("..."))))) {
@@ -58,4 +59,18 @@ x13_text_frame <- function(text_frame, series = NULL, id = NULL, ..., drop = TRU
   text_frame_apply(text_frame = text_frame, fun = "x13_both", id = id, ..., drop = drop, verbose = verbose, envir = envir)
 }
 
-
+# Modification (with warning and stop) of SSBtools::ForceCharacterDataFrame
+character_frame <- function(x) {
+  warn <- FALSE
+  for (i in seq_len(ncol(x))) if (is.factor(x[, i, drop =TRUE])){
+    warn <- TRUE
+    x[, i] <- as.character(x[, i, drop =TRUE])
+  } 
+  if(warn){
+    warning("text_frame factor variable(s) converted to character")
+  }
+  if(!all(sapply(x, class) == "character")){
+    stop("text_frame variables must be character")
+  }
+  x
+}
