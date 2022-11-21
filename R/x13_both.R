@@ -10,7 +10,7 @@
 #' @param userdefined  Parameter to \code{\link{x13}}  (via `...`  to `x13_pickmdl`).
 #' @param both_output One of `"main"` (default, x13_pickmdl output), `"spec"` (spec output) or `"both"`. 
 #'
-#' @return
+#' @return By default an `x13` output object, or otherwise a list as specified by parameter `output` and `both_output`.
 #' @export
 #' 
 #' @examples

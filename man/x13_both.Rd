@@ -56,6 +56,9 @@ If \code{spec} is a list of several objects as outputted from \code{x13_spec_pic
 
 \item{both_output}{One of \code{"main"} (default, x13_pickmdl output), \code{"spec"} (spec output) or \code{"both"}.}
 }
+\value{
+By default an \code{x13} output object, or otherwise a list as specified by parameter \code{output} and \code{both_output}.
+}
 \description{
 Output is determined by the parameter \code{both_output}.
 }
