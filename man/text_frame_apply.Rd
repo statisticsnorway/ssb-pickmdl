@@ -9,28 +9,31 @@ text_frame_apply(
   fun = NULL,
   id = NULL,
   ...,
+  call_list = NULL,
   drop = TRUE,
   verbose = FALSE,
-  envir = NULL,
-  call_list = NULL
+  envir = NULL
 )
 }
 \arguments{
 \item{text_frame}{Data frame to specify function arguments. See details.}
 
-\item{fun}{fun}
+\item{fun}{The function to be called, given as a character string.}
 
-\item{id}{id}
+\item{id}{To select rows from input \code{text_frame} (name or number).}
 
-\item{...}{dots}
+\item{...}{Extra arguments that do not change.}
 
-\item{drop}{drop}
+\item{call_list}{Extra arguments that do not change, specified as a list.}
 
-\item{verbose}{verb}
+\item{drop}{Whether to omit list output when a single row is specified by \code{id}.}
 
-\item{envir}{envir}
+\item{verbose}{When \code{TRUE}, function calls will be printed.}
 
-\item{call_list}{calll}
+\item{envir}{The environment for the function evaluation.  See \code{\link{eval}}.}
+}
+\value{
+A list of function evaluation outputs or output from a single function evaluation (see \code{drop}).
 }
 \description{
 Apply function(s) with input from a data frame

@@ -1,7 +1,5 @@
 
 
-
-
 #' Apply function(s) with input from a data frame 
 #' 
 #' 
@@ -13,18 +11,19 @@
 #' With `fun = NULL`, the first column must contain function name(s) to be called. 
 #'
 #' @param text_frame Data frame to specify function arguments. See details. 
-#' @param fun fun 
-#' @param id id 
-#' @param ... dots
-#' @param call_list calll
-#' @param drop drop
-#' @param verbose verb
-#' @param envir envir
+#' @param fun The function to be called, given as a character string.
+#' @param id  To select rows from input `text_frame` (name or number). 
+#' @param ... Extra arguments that do not change.
+#' @param call_list Extra arguments that do not change, specified as a list.
+#' @param drop Whether to omit list output when a single row is specified by `id`.  
+#' @param verbose When `TRUE`, function calls will be printed. 
+#' @param envir The environment for the function evaluation.  See \code{\link{eval}}.
 #' 
 #' @note This function is general and may be usable outside the pickmdl package.
 #'
-#' @return
+#' @return A list of function evaluation outputs or output from a single function evaluation (see `drop`).
 #' @export
+#' @importFrom utils flush.console
 #'
 #' @examples
 #' ax_plus_b <- function(a = 2, b = 3, x = 5) {a * x + b}
@@ -38,7 +37,7 @@
 #' text_frame_apply(z[c(1, 3)], "ax_plus_b", call_list = list(b = 7))
 #' text_frame_apply(z[c(1, 3)], "ax_plus_b", b = 1:2, id = "B", drop = FALSE)
 #' text_frame_apply(z[3], "ax_plus_b", a = 1, call_list = list(b = 7))
-text_frame_apply <- function(text_frame, fun = NULL, id = NULL, ..., drop = TRUE, verbose = FALSE, envir = NULL, call_list = NULL) {
+text_frame_apply <- function(text_frame, fun = NULL, id = NULL, ..., call_list = NULL, drop = TRUE, verbose = FALSE, envir = NULL) {
   if (is.null(envir)) {
     envir <- parent.frame()
   }
