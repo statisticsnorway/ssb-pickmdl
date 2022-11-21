@@ -2,21 +2,27 @@
 
 
 
-#' x13_text_frame
+#' Multiple \code{\link{x13_both}} runs with code input from a data frame
 #'
-#' @param text_frame text_frame 
-#' @param series series 
-#' @param id id 
-#' @param ... dots
-#' @param drop drop 
-#' @param verbose verbose 
-#' @param dots2list dots2list
+#' @param text_frame Data frame where all variables are character and with parameter names as column names.
+#'                   Each cell contains text with R code written as source code in a call to \code{\link{x13_both}}. 
+#'                   The parameter will be omitted when the cell is missing (NA). 
+#'                   The exception is the column name, `name`, which contains the time series names. 
+#'                   Without such a column, the names are taken from the row names. 
+#' @param series A named multiple time series object, given as a character string.
+#'               When `NULL`, the series parameter must be included in `text_frame`.  
+#' @param id To select specific time series to be processed (name or number).
+#' @param ... Extra arguments that do not change.
+#' @param drop Whether to omit list output when a single time series is specified by `id`.
+#' @param verbose  When `TRUE`, function calls will be printed. 
+#' @param dots2list A technical parameter.  When `TRUE` and when possible (warning when not), 
+#'                  the underlying function, \code{\link{text_frame_apply}}, will be called via `call_list` instead of `...`. 
+#'                  The advantage is prettier (unevaluated) printing when `verbose = TRUE`. 
 #'
-#' @return
+#' @return A list of `x13_both` outputs or output from a single run of `x13_both` (see `drop`).
 #' @export
 #'
 #' @examples
-#' 
 #' myseries <- pickmdl_data("myseries")
 #' seriesABC <- cbind(A = myseries, B = myseries + 10, C = myseries + 20)
 #' 
@@ -25,7 +31,11 @@
 #'                  usrdef.outliersType = c('rep("LS", 2)', '"AO"', NA),
 #'                  usrdef.outliersEnabled = c("TRUE", "TRUE", NA))
 #' 
-#' outABC <- x13_text_frame(tf, series = "seriesABC", spec = "RSA3", transform.function = "Log", verbose = TRUE)
+#' outABC <- x13_text_frame(tf, series = "seriesABC", spec = "RSA3", transform.function = "Log", 
+#'                          verbose = TRUE)
+#' outB   <- x13_text_frame(tf, series = "seriesABC", spec = "RSA3", transform.function = "Log", 
+#'                          id = "B")
+#' identical(outABC[[2]], outB)  # TRUE
 #' 
 x13_text_frame <- function(text_frame, series = NULL, id = NULL, ..., drop = TRUE, verbose = FALSE, dots2list = TRUE) {
   text_frame <- character_frame(text_frame)

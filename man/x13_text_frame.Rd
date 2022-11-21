@@ -2,7 +2,7 @@
 % Please edit documentation in R/x13_text_frame.R
 \name{x13_text_frame}
 \alias{x13_text_frame}
-\title{x13_text_frame}
+\title{Multiple \code{\link{x13_both}} runs with code input from a data frame}
 \usage{
 x13_text_frame(
   text_frame,
@@ -15,25 +15,34 @@ x13_text_frame(
 )
 }
 \arguments{
-\item{text_frame}{text_frame}
+\item{text_frame}{Data frame where all variables are character and with parameter names as column names.
+Each cell contains text with R code written as source code in a call to \code{\link{x13_both}}.
+The parameter will be omitted when the cell is missing (NA).
+The exception is the column name, \code{name}, which contains the time series names.
+Without such a column, the names are taken from the row names.}
 
-\item{series}{series}
+\item{series}{A named multiple time series object, given as a character string.
+When \code{NULL}, the series parameter must be included in \code{text_frame}.}
 
-\item{id}{id}
+\item{id}{To select specific time series to be processed (name or number).}
 
-\item{...}{dots}
+\item{...}{Extra arguments that do not change.}
 
-\item{drop}{drop}
+\item{drop}{Whether to omit list output when a single time series is specified by \code{id}.}
 
-\item{verbose}{verbose}
+\item{verbose}{When \code{TRUE}, function calls will be printed.}
 
-\item{dots2list}{dots2list}
+\item{dots2list}{A technical parameter.  When \code{TRUE} and when possible (warning when not),
+the underlying function, \code{\link{text_frame_apply}}, will be called via \code{call_list} instead of \code{...}.
+The advantage is prettier (unevaluated) printing when \code{verbose = TRUE}.}
+}
+\value{
+A list of \code{x13_both} outputs or output from a single run of \code{x13_both} (see \code{drop}).
 }
 \description{
-x13_text_frame
+Multiple \code{\link{x13_both}} runs with code input from a data frame
 }
 \examples{
-
 myseries <- pickmdl_data("myseries")
 seriesABC <- cbind(A = myseries, B = myseries + 10, C = myseries + 20)
 
@@ -42,6 +51,10 @@ tf <- data.frame(name = c("A", "B", "C"), automdl.enabled = c("TRUE", "FALSE", "
                  usrdef.outliersType = c('rep("LS", 2)', '"AO"', NA),
                  usrdef.outliersEnabled = c("TRUE", "TRUE", NA))
 
-outABC <- x13_text_frame(tf, series = "seriesABC", spec = "RSA3", transform.function = "Log", verbose = TRUE)
+outABC <- x13_text_frame(tf, series = "seriesABC", spec = "RSA3", transform.function = "Log", 
+                         verbose = TRUE)
+outB   <- x13_text_frame(tf, series = "seriesABC", spec = "RSA3", transform.function = "Log", 
+                         id = "B")
+identical(outABC[[2]], outB)  # TRUE
 
 }
