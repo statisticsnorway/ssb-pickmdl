@@ -132,6 +132,8 @@ x13_pickmdl <- function(series, spec, ...,
   
   automdl.enabled <- isTRUE(automdl.enabled)
   
+  star0 <- FALSE
+  
   if (!all(apply(sapply(spec, class), 1, unique) == c("SA_spec", "X13"))) {
     if (!all(class(spec) == c("SA_spec", "X13"))) {
       stop("Wrong `spec` input")
@@ -139,7 +141,14 @@ x13_pickmdl <- function(series, spec, ...,
     if (automdl.enabled) {
       spec <- list(spec)
     } else {
-      spec <- x13_spec_pickmdl(spec)
+      if (star == 0) {
+        star0 <- TRUE
+        spec <- c(x13_spec_pickmdl(spec), list(spec))
+        spec[[length(spec)]] <- x13_spec(spec[[length(spec)]], automdl.enabled = TRUE)
+        star <- length(spec)
+      } else {
+        spec <- x13_spec_pickmdl(spec)
+      }
     }
   }
   
@@ -156,15 +165,6 @@ x13_pickmdl <- function(series, spec, ...,
   }
   
   if (automdl.enabled) {
-    arma <- sa_mult[[1]]$regarima$arma  # as.numeric remove names, as.numeric needed? can be factors?  
-    spec[[1]] <- x13_spec(spec[[1]], 
-                          arima.p = as.numeric(arma["p"]), 
-                          arima.d = as.numeric(arma["d"]), 
-                          arima.q = as.numeric(arma["q"]), 
-                          arima.bp = as.numeric(arma["bp"]), 
-                          arima.bd = as.numeric(arma["bd"]), 
-                          arima.bq = as.numeric(arma["bq"]),
-                          automdl.enabled = FALSE)
     crit_tab <- NULL
     mdl_nr <- 1
   } else {
@@ -177,7 +177,25 @@ x13_pickmdl <- function(series, spec, ...,
     print(sa_mult[[mdl_nr]]$regarima$arma)
   }
   
-  spec <- spec[[mdl_nr]] 
+  length_spec <- length(spec)
+  spec <- spec[[mdl_nr]]
+  
+  if(automdl.enabled | (star0 & mdl_nr == length_spec)){
+    if(!automdl.enabled){
+      if(!is.null(when_star)){
+        when_star("automdl since no pickmdl model ok")
+      }
+    }
+    arma <- sa_mult[[mdl_nr]]$regarima$arma  # as.numeric remove names, as.numeric needed? can be factors?  
+    spec <- x13_spec(spec, 
+                     arima.p = as.numeric(arma["p"]), 
+                     arima.d = as.numeric(arma["d"]), 
+                     arima.q = as.numeric(arma["q"]), 
+                     arima.bp = as.numeric(arma["bp"]), 
+                     arima.bd = as.numeric(arma["bd"]), 
+                     arima.bq = as.numeric(arma["bq"]),
+                     automdl.enabled = FALSE)
+  }
   
 
   
