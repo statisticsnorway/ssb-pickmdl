@@ -223,6 +223,11 @@ x13_pickmdl <- function(series, spec, ...,
   sa <- x13(series = series, spec = spec, ...)
   
   
+  if(!crit_selection(crit_table(list(sa)), star = 0, when_star = NULL)){
+    warning("FINAL RUN NOT OK")
+  }
+  
+  
   if(output == "sa_spec"){
     return(list(sa = sa, spec = spec))
   }
