@@ -19,19 +19,25 @@ test_that("x13_pickmdl works ok", {
   
   
   
-  d1 <- x13_pickmdl(myseries, spec_c, pickmdl_method = "first_automdl", when_finalnotok = warning)
+  d1 <- x13_pickmdl(myseries, spec_c, pickmdl_method = "first_automdl", when_finalnotok = warning, output = "all")
+  d1b <- x13_pickmdl(myseries, spec_c, pickmdl_method = "first_automdl", when_finalnotok = warning, output = "all", fastfirst = FALSE)
   d2 <- x13_pickmdl(myseries*(1+ 0.3*q), spec_c, pickmdl_method = "first_automdl", when_finalnotok = warning)
-  d3 <- x13_pickmdl(myseries*(1+ 0.15*q), spec_c, pickmdl_method = "first_automdl", when_finalnotok = warning)
+  d3 <- x13_pickmdl(myseries*(1+ 0.15*q), spec_c, pickmdl_method = "first_automdl", when_finalnotok = warning, output = "all")
   d4 <- x13_pickmdl(myseries*(1+ 0.1*q), spec_c, pickmdl_method = "first_automdl", when_finalnotok = warning)
   expect_warning({d4b <-x13_pickmdl(myseries*(1+ 0.1*q), spec_c, pickmdl_method = "first_automdl", when_finalnotok = warning, identify_arima_mu = FALSE)})
   d5 <- x13_pickmdl(myseries*(1+ 0.25*q)+10, spec_c, pickmdl_method = "first_automdl", when_finalnotok = warning)
   expect_warning({d6 <- x13_pickmdl(myseries+(q)^2, spec_c, pickmdl_method = "first_tryautomdl", when_finalnotok = message)})
   
-  expect_equal(d1$regarima$arma, c(0, 1, 2, 0, 1, 1), ignore_attr = TRUE)
+  expect_equal(d1$sa$regarima$arma, c(0, 1, 2, 0, 1, 1), ignore_attr = TRUE)
   expect_equal(d2$regarima$arma, c(2, 1, 2, 0, 1, 1), ignore_attr = TRUE)
-  expect_equal(d3$regarima$arma, c(2, 0, 1, 1, 0, 1), ignore_attr = TRUE)
+  expect_equal(d3$sa$regarima$arma, c(2, 0, 1, 1, 0, 1), ignore_attr = TRUE)
   expect_equal(d4$regarima$arma, c(2, 0, 1, 1, 0, 1), ignore_attr = TRUE)
   expect_equal(d5$regarima$arma, c(0, 1, 1, 0, 1, 1), ignore_attr = TRUE)
   expect_equal(d6$regarima$arma, c(0, 1, 1, 0, 1, 1), ignore_attr = TRUE)
+  
+  expect_equal(d1$mdl_nr, d1b$mdl_nr)
+  expect_equal(nrow(d1b$crit_tab), 6)
+  expect_equal(nrow(d1$crit_tab), 2)
+  expect_equal(d1$crit_tab, d1b$crit_tab[1:2, ])
   
 })

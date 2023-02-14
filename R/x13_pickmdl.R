@@ -30,6 +30,9 @@
 #' @param identify_arima_mu When `TRUE`, `arima.mu` is identified by the shortened series (see \code{\link{arima_mu}}).
 #' @param automdl.enabled When `TRUE`, automdl is performed instead of pickmdl. 
 #'            If `spec` is a list of several objects as outputted from `x13_spec_pickmdl`, only first object is used.
+#' @param fastfirst When `TRUE` and when pickmdl with `crit_selection` parameter `"first"`, 
+#'                  only as many models as needed are run.
+#'                  This affects the output when `output = "all"`. 
 #' @param verbose Printing information to console when `TRUE`. 
 #' @param output One of `"sa"` (default), `"spec"` (final spec), `"sa_spec"` (both) and `"all"`. See examples.        
 #'
@@ -136,6 +139,7 @@ x13_pickmdl <- function(series, spec, ...,
                         identify_outliers = FALSE,
                         identify_arima_mu = TRUE,
                         automdl.enabled = FALSE,
+                        fastfirst = TRUE,
                         verbose = FALSE,
                         output = "sa") {
   
@@ -173,20 +177,59 @@ x13_pickmdl <- function(series, spec, ...,
     spec[[1]] <- x13_spec(spec[[1]], automdl.enabled = TRUE)
   }
   
-  if (is.null(identification_estimate.to)) {
-    sa_mult <- x13_multi(series = window(series, end = identification_end), spec = spec, ...)
-  } else {
-    sa_mult <- x13_multi(series = window(series, end = identification_end), 
-                         spec = lapply(spec, x13_spec, estimate.to = identification_estimate.to), ...)
+  if (fastfirst) {
+    fastfirst <- !automdl.enabled & pickmdl_method == "first"
   }
   
-  if (automdl.enabled) {
+  if (fastfirst) {
+    sa_mult <- NULL
     crit_tab <- NULL
-    mdl_nr <- 1
+    ok <- FALSE
+    i <- 0
+    when_star_here <- NULL
+    while (!ok) {
+      i <- i + 1
+      # almost same code as below (spec -> spec[i])
+      if (is.null(identification_estimate.to)) {
+        sa_mult <- c(sa_mult, x13_multi(series = window(series, end = identification_end), spec = spec[i], ...))
+      } else {
+        sa_mult <- c(sa_mult, x13_multi(series = window(series, end = identification_end), 
+                                        spec = lapply(spec[i], x13_spec, estimate.to = identification_estimate.to), ...))
+      }
+      crit_tab_i <- crit_table(sa_mult[i])
+      if (i == length(spec)) {
+        when_star_here <- when_star
+      }
+      ok <- as.logical(crit_selection(crit_tab_i, star = 0, when_star = when_star_here))
+      crit_tab <- rbind(crit_tab, crit_tab_i)
+      if (ok) {
+        mdl_nr <- i
+      }
+      if (!ok & i == length(spec)) {
+        mdl_nr <- star
+        ok <- TRUE
+      }
+    }
   } else {
-    crit_tab <- crit_table(sa_mult)
-    mdl_nr <- crit_selection(crit_tab, pickmdl_method = pickmdl_method, star = star, when_star = when_star)
+    if (is.null(identification_estimate.to)) {
+      sa_mult <- x13_multi(series = window(series, end = identification_end), spec = spec, ...)
+    } else {
+      sa_mult <- x13_multi(series = window(series, end = identification_end), 
+                           spec = lapply(spec, x13_spec, estimate.to = identification_estimate.to), ...)
+    }
+    
+    if (automdl.enabled) {
+      crit_tab <- NULL
+      mdl_nr <- 1
+    } else {
+      crit_tab <- crit_table(sa_mult)
+      mdl_nr <- crit_selection(crit_tab, pickmdl_method = pickmdl_method, star = star, when_star = when_star)
+    }
   }
+  
+  
+  
+  
   
   if(verbose){
     print(sa_mult[[mdl_nr]]$regarima$arma)

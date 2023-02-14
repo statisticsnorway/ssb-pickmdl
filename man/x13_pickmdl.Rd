@@ -21,6 +21,7 @@ x13_pickmdl(
   identify_outliers = FALSE,
   identify_arima_mu = TRUE,
   automdl.enabled = FALSE,
+  fastfirst = TRUE,
   verbose = FALSE,
   output = "sa"
 )
@@ -70,6 +71,10 @@ This is an alternative to  \code{identification_end}.}
 
 \item{automdl.enabled}{When \code{TRUE}, automdl is performed instead of pickmdl.
 If \code{spec} is a list of several objects as outputted from \code{x13_spec_pickmdl}, only first object is used.}
+
+\item{fastfirst}{When \code{TRUE} and when pickmdl with \code{crit_selection} parameter \code{"first"},
+only as many models as needed are run.
+This affects the output when \code{output = "all"}.}
 
 \item{verbose}{Printing information to console when \code{TRUE}.}
 
