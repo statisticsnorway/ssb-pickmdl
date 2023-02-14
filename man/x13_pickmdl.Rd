@@ -12,6 +12,8 @@ x13_pickmdl(
   pickmdl_method = "first",
   star = 1,
   when_star = warning,
+  when_automdl = message,
+  when_finalnotok = NULL,
   identification_end = NULL,
   identification_estimate.to = NULL,
   identify_t_filter = FALSE,
@@ -33,11 +35,23 @@ by \code{x13_spec_pickmdl} with default five arima model specifications.}
 
 \item{...}{Further \code{x13} parameters (currently only parameter \code{userdefined} is additional parameter to \code{x13}).}
 
-\item{pickmdl_method}{\code{\link{crit_selection}} parameter}
+\item{pickmdl_method}{\code{\link{crit_selection}} parameter
+or one of the two extra possibilities, \code{"first_automdl"} or \code{"first_tryautomdl"}.
+In both cases the \code{crit_selection} parameter is \code{"first"} and the automdl model is added as the last pickmdl model.
+\itemize{
+\item \strong{\code{"first_automdl"}:} The automdl model is chosen whenever no pickmdl model is ok.
+In other words, the \code{star} parameter changes.
+\item \strong{\code{"first_tryautomdl"}:} When no pickmdl model is ok:  The automdl model is chosen if this model is ok,
+otherwise the \code{star} model is chosen.
+}}
 
 \item{star}{\code{\link{crit_selection}} parameter}
 
 \item{when_star}{\code{\link{crit_selection}} parameter}
+
+\item{when_automdl}{Function to be called when automdl since no pickmdl model ok. Supply NULL to do nothing.}
+
+\item{when_finalnotok}{Function to be called when final run with final model is not ok. Supply NULL to do nothing.}
 
 \item{identification_end}{To shorten the series before runs used to identify (arima) parameters.
 That is, the series is shortened by \verb{window(series,} \verb{end = identification_end)}.}

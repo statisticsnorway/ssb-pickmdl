@@ -9,9 +9,17 @@
 #'             In the case of a single object and when `automdl.enabled` is `FALSE`, `spec` will be converted internally 
 #'             by `x13_spec_pickmdl` with default five arima model specifications. 
 #' @param ... Further `x13` parameters (currently only parameter `userdefined` is additional parameter to `x13`).
-#' @param pickmdl_method \code{\link{crit_selection}} parameter
+#' @param pickmdl_method \code{\link{crit_selection}} parameter 
+#'         or one of the two extra possibilities, `"first_automdl"` or `"first_tryautomdl"`.
+#'         In both cases the `crit_selection` parameter is `"first"` and the automdl model is added as the last pickmdl model.
+#' * **`"first_automdl"`:** The automdl model is chosen whenever no pickmdl model is ok.    
+#'                          In other words, the `star` parameter changes.  
+#' * **`"first_tryautomdl"`:** When no pickmdl model is ok:  The automdl model is chosen if this model is ok, 
+#'                          otherwise the `star` model is chosen.  
 #' @param star           \code{\link{crit_selection}} parameter
 #' @param when_star      \code{\link{crit_selection}} parameter
+#' @param when_automdl Function to be called when automdl since no pickmdl model ok. Supply NULL to do nothing.
+#' @param when_finalnotok Function to be called when final run with final model is not ok. Supply NULL to do nothing.
 #' @param identification_end To shorten the series before runs used to identify (arima) parameters.
 #'            That is, the series is shortened by `window(series,` `end = identification_end)`.
 #' @param identification_estimate.to   To set \code{\link{x13_spec}} parameter `estimate.to` before runs used to identify (arima) parameters.  
@@ -118,7 +126,10 @@
 #' q2$sa$regarima
 #' q3$regarima
 x13_pickmdl <- function(series, spec, ..., 
-                        pickmdl_method = "first", star = 1, when_star = warning,
+                        pickmdl_method = "first", star = 1, 
+                        when_star = warning,
+                        when_automdl = message,
+                        when_finalnotok = NULL,
                         identification_end = NULL, identification_estimate.to = NULL, 
                         identify_t_filter = FALSE, identify_s_filter = FALSE, 
                         identify_outliers = FALSE,
@@ -132,7 +143,7 @@ x13_pickmdl <- function(series, spec, ...,
   
   automdl.enabled <- isTRUE(automdl.enabled)
   
-  star0 <- FALSE
+  auto_in_pickmdl <- FALSE
   
   if (!all(apply(sapply(spec, class), 1, unique) == c("SA_spec", "X13"))) {
     if (!all(class(spec) == c("SA_spec", "X13"))) {
@@ -141,11 +152,14 @@ x13_pickmdl <- function(series, spec, ...,
     if (automdl.enabled) {
       spec <- list(spec)
     } else {
-      if (star == 0) {
-        star0 <- TRUE
+      if(pickmdl_method %in% c("first_automdl", "first_tryautomdl")){
         spec <- c(x13_spec_pickmdl(spec), list(spec))
         spec[[length(spec)]] <- x13_spec(spec[[length(spec)]], automdl.enabled = TRUE)
-        star <- length(spec)
+        if(pickmdl_method=="first_automdl"){
+          star <- length(spec)
+        }
+        auto_in_pickmdl <- TRUE
+        pickmdl_method <- "first"
       } else {
         spec <- x13_spec_pickmdl(spec)
       }
@@ -169,7 +183,6 @@ x13_pickmdl <- function(series, spec, ...,
     mdl_nr <- 1
   } else {
     crit_tab <- crit_table(sa_mult)
-    
     mdl_nr <- crit_selection(crit_tab, pickmdl_method = pickmdl_method, star = star, when_star = when_star)
   }
   
@@ -180,10 +193,10 @@ x13_pickmdl <- function(series, spec, ...,
   length_spec <- length(spec)
   spec <- spec[[mdl_nr]]
   
-  if(automdl.enabled | (star0 & mdl_nr == length_spec)){
+  if(automdl.enabled | (auto_in_pickmdl & mdl_nr == length_spec)){
     if(!automdl.enabled){
-      if(!is.null(when_star)){
-        when_star("automdl since no pickmdl model ok")
+      if(!is.null(when_automdl)){
+        when_automdl("automdl since no pickmdl model ok")
       }
     }
     arma <- sa_mult[[mdl_nr]]$regarima$arma  # as.numeric remove names, as.numeric needed? can be factors?  
@@ -222,9 +235,10 @@ x13_pickmdl <- function(series, spec, ...,
   
   sa <- x13(series = series, spec = spec, ...)
   
-  
-  if(!crit_selection(crit_table(list(sa)), star = 0, when_star = NULL)){
-    warning("FINAL RUN NOT OK")
+  if (!is.null(when_finalnotok)) {
+    if (!crit_selection(crit_table(list(sa)), star = 0, when_star = NULL)) {
+      when_finalnotok("FINAL RUN NOT OK")
+    }
   }
   
   
