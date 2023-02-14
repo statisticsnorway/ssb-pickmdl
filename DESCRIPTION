@@ -14,3 +14,6 @@ License: Apache License 2.0 | file LICENSE
 Roxygen: list(markdown = TRUE)
 Encoding: UTF-8
 RoxygenNote: 7.2.3
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
