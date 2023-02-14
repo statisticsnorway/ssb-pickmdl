@@ -108,9 +108,16 @@
 #' # Warning avoided (when_star) and 2nd (star) model selected 
 #' d2 <- x13_pickmdl(myseries, spec_d, star = 2, when_star = NULL, verbose = TRUE)
 #' 
+#' # automdl since no pickmdl model ok, but still not ok 
+#' d3 <- x13_pickmdl(myseries, spec_d, pickmdl_method = "first_automdl", verbose = TRUE)
+#' 
+#' # airline model (star) since automdl also not ok 
+#' d4 <- x13_pickmdl(myseries, spec_d, pickmdl_method = "first_tryautomdl", verbose = TRUE,
+#'                   when_finalnotok = warning) # also finalnotok warning
 #' 
 #' # As a2, with output = "all"
-#' k <- x13_pickmdl(myseries, spec_b, identification_end = c(2010, 2), output = "all")
+#' k <- x13_pickmdl(myseries, spec_b, identification_end = c(2010, 2), output = "all",
+#'                  fastfirst = FALSE) # With TRUE only one model in this case 
 #' k$sa$decomposition  # As a2$decomposition 
 #' k$mdl_nr            # index of selected model used to identify parameters
 #' k$sa_mult[[k$mdl_nr]]$decomposition  # decomposition for model to identify
