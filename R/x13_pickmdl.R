@@ -27,6 +27,7 @@
 #' @param identify_t_filter When `TRUE`, Henderson trend filter is identified by the shortened (see above) series.
 #' @param identify_s_filter When `TRUE`, Seasonal moving average filter is identified by the shortened series.
 #' @param identify_outliers When `TRUE`, Outliers are identified by the shortened series.
+#' @param identify_arima_mu When `TRUE`, `arima.mu` is identified by the shortened series (see \code{\link{arima_mu}}).
 #' @param automdl.enabled When `TRUE`, automdl is performed instead of pickmdl. 
 #'            If `spec` is a list of several objects as outputted from `x13_spec_pickmdl`, only first object is used.
 #' @param verbose Printing information to console when `TRUE`. 
@@ -133,6 +134,7 @@ x13_pickmdl <- function(series, spec, ...,
                         identification_end = NULL, identification_estimate.to = NULL, 
                         identify_t_filter = FALSE, identify_s_filter = FALSE, 
                         identify_outliers = FALSE,
+                        identify_arima_mu = TRUE,
                         automdl.enabled = FALSE,
                         verbose = FALSE,
                         output = "sa") {
@@ -210,7 +212,9 @@ x13_pickmdl <- function(series, spec, ...,
                      automdl.enabled = FALSE)
   }
   
-
+  if (identify_arima_mu) {
+    spec <- x13_spec(spec, arima.mu = arima_mu(sa_mult[[mdl_nr]]))
+  }
   
   if (identify_t_filter | identify_s_filter) {
     filters <- filter_input(sa_mult[[mdl_nr]])

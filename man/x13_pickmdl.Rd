@@ -19,6 +19,7 @@ x13_pickmdl(
   identify_t_filter = FALSE,
   identify_s_filter = FALSE,
   identify_outliers = FALSE,
+  identify_arima_mu = TRUE,
   automdl.enabled = FALSE,
   verbose = FALSE,
   output = "sa"
@@ -64,6 +65,8 @@ This is an alternative to  \code{identification_end}.}
 \item{identify_s_filter}{When \code{TRUE}, Seasonal moving average filter is identified by the shortened series.}
 
 \item{identify_outliers}{When \code{TRUE}, Outliers are identified by the shortened series.}
+
+\item{identify_arima_mu}{When \code{TRUE}, \code{arima.mu} is identified by the shortened series (see \code{\link{arima_mu}}).}
 
 \item{automdl.enabled}{When \code{TRUE}, automdl is performed instead of pickmdl.
 If \code{spec} is a list of several objects as outputted from \code{x13_spec_pickmdl}, only first object is used.}
