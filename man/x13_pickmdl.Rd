@@ -53,7 +53,8 @@ otherwise the \code{star} model is chosen.
 
 \item{when_automdl}{Function to be called when automdl since no pickmdl model ok. Supply NULL to do nothing.}
 
-\item{when_finalnotok}{Function to be called when final run with final model is not ok. Supply NULL to do nothing.}
+\item{when_finalnotok}{Function to be called, e.g. \code{\link{warning}}, when final run with final model is not ok. Supply NULL to do nothing.
+See \code{\link{crit_ok}}.}
 
 \item{identification_end}{To shorten the series before runs used to identify (arima) parameters.
 That is, the series is shortened by \verb{window(series,} \verb{end = identification_end)}.}

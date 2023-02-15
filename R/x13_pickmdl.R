@@ -19,7 +19,8 @@
 #' @param star           \code{\link{crit_selection}} parameter
 #' @param when_star      \code{\link{crit_selection}} parameter
 #' @param when_automdl Function to be called when automdl since no pickmdl model ok. Supply NULL to do nothing.
-#' @param when_finalnotok Function to be called when final run with final model is not ok. Supply NULL to do nothing.
+#' @param when_finalnotok Function to be called, e.g. \code{\link{warning}}, when final run with final model is not ok. Supply NULL to do nothing.
+#'                        See \code{\link{crit_ok}}. 
 #' @param identification_end To shorten the series before runs used to identify (arima) parameters.
 #'            That is, the series is shortened by `window(series,` `end = identification_end)`.
 #' @param identification_estimate.to   To set \code{\link{x13_spec}} parameter `estimate.to` before runs used to identify (arima) parameters.  
@@ -290,7 +291,7 @@ x13_pickmdl <- function(series, spec, ...,
   sa <- x13(series = series, spec = spec, ...)
   
   if (!is.null(when_finalnotok)) {
-    if (!crit_selection(crit_table(list(sa)), star = 0, when_star = NULL)) {
+    if (!crit_ok(sa)) {
       when_finalnotok("FINAL RUN NOT OK")
     }
   }
