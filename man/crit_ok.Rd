@@ -16,6 +16,9 @@ crit_ok(sa)
 Check whether \code{\link{x13}} output is ok according to
 the  PICKMDL "first" method
 }
+\details{
+Unlike \code{\link{ok}}, this function does the actual calculations.
+}
 \examples{
 myseries <- pickmdl_data("myseries")
 

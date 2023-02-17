@@ -4,6 +4,7 @@
 #' Check whether \code{\link{x13}} output is ok according to   
 #' the  PICKMDL "first" method
 #' 
+#' Unlike \code{\link{ok}}, this function does the actual calculations.
 #'
 #' @param sa A \code{\link{x13}} output object
 #'

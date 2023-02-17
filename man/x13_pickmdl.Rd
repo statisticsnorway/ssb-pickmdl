@@ -23,7 +23,8 @@ x13_pickmdl(
   automdl.enabled = FALSE,
   fastfirst = TRUE,
   verbose = FALSE,
-  output = "sa"
+  output = "sa",
+  add_comment = TRUE
 )
 
 x13_automdl(..., automdl.enabled = TRUE)
@@ -80,6 +81,11 @@ This affects the output when \code{output = "all"}.}
 \item{verbose}{Printing information to console when \code{TRUE}.}
 
 \item{output}{One of \code{"sa"} (default), \code{"spec"} (final spec), \code{"sa_spec"} (both) and \code{"all"}. See examples.}
+
+\item{add_comment}{When \code{TRUE}, a  comment attribute
+(character vector with \code{ok}, \code{ok_final} and \code{mdl_nr}) will
+be added to the \code{\link{x13}} output object. Use \code{\link{comment}}
+to get the attribute or \code{\link{ok}} to get the attribute converted to a list.}
 }
 \value{
 By default an \code{x13} output object, or otherwise a list as specified by parameter \code{output}.
@@ -94,6 +100,9 @@ myseries <- pickmdl_data("myseries")
 spec_a  <- x13_spec(spec = "RSA3", transform.function = "Log")
 
 a <- x13_pickmdl(myseries, spec_a, verbose = TRUE)
+comment(a)
+ok(a)
+unlist(ok(a))
 a$regarima
 
 a2 <- x13_pickmdl(myseries, spec_a, identification_end = c(2014, 2))

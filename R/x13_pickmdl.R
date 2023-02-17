@@ -35,7 +35,11 @@
 #'                  only as many models as needed are run.
 #'                  This affects the output when `output = "all"`. 
 #' @param verbose Printing information to console when `TRUE`. 
-#' @param output One of `"sa"` (default), `"spec"` (final spec), `"sa_spec"` (both) and `"all"`. See examples.        
+#' @param output One of `"sa"` (default), `"spec"` (final spec), `"sa_spec"` (both) and `"all"`. See examples.   
+#' @param add_comment When `TRUE`, a  comment attribute 
+#'      (character vector with `ok`, `ok_final` and `mdl_nr`) will 
+#'      be added to the \code{\link{x13}} output object. Use \code{\link{comment}} 
+#'      to get the attribute or \code{\link{ok}} to get the attribute converted to a list.     
 #'
 #' @return By default an `x13` output object, or otherwise a list as specified by parameter `output`.
 #' @export
@@ -47,6 +51,9 @@
 #' spec_a  <- x13_spec(spec = "RSA3", transform.function = "Log")
 #' 
 #' a <- x13_pickmdl(myseries, spec_a, verbose = TRUE)
+#' comment(a)
+#' ok(a)
+#' unlist(ok(a))
 #' a$regarima
 #' 
 #' a2 <- x13_pickmdl(myseries, spec_a, identification_end = c(2014, 2))
@@ -149,7 +156,8 @@ x13_pickmdl <- function(series, spec, ...,
                         automdl.enabled = FALSE,
                         fastfirst = TRUE,
                         verbose = FALSE,
-                        output = "sa") {
+                        output = "sa",
+                        add_comment = TRUE) {
   
   
   if(!(output %in% c("sa", "spec", "sa_spec", "all")))
@@ -192,10 +200,11 @@ x13_pickmdl <- function(series, spec, ...,
   if (fastfirst) {
     sa_mult <- NULL
     crit_tab <- NULL
-    ok <- FALSE
+    ok_loop <- FALSE
+    ok <- TRUE
     i <- 0
     when_star_here <- NULL
-    while (!ok) {
+    while (!ok_loop) {
       i <- i + 1
       # almost same code as below (spec -> spec[i])
       if (is.null(identification_estimate.to)) {
@@ -208,14 +217,15 @@ x13_pickmdl <- function(series, spec, ...,
       if (i == length(spec)) {
         when_star_here <- when_star
       }
-      ok <- as.logical(crit_selection(crit_tab_i, star = 0, when_star = when_star_here))
+      ok_loop <- as.logical(crit_selection(crit_tab_i, star = 0, when_star = when_star_here))
       crit_tab <- rbind(crit_tab, crit_tab_i)
-      if (ok) {
+      if (ok_loop) {
         mdl_nr <- i
       }
-      if (!ok & i == length(spec)) {
+      if (!ok_loop & i == length(spec)) {
         mdl_nr <- star
-        ok <- TRUE
+        ok_loop <- TRUE
+        ok <- FALSE
       }
     }
   } else {
@@ -228,10 +238,17 @@ x13_pickmdl <- function(series, spec, ...,
     
     if (automdl.enabled) {
       crit_tab <- NULL
-      mdl_nr <- 1
+      mdl_nr <- 1L
+      ok <- crit_ok(sa_mult[[mdl_nr]])
     } else {
       crit_tab <- crit_table(sa_mult)
       mdl_nr <- crit_selection(crit_tab, pickmdl_method = pickmdl_method, star = star, when_star = when_star)
+      if (!mdl_nr) {
+        mdl_nr <- star
+        ok <- FALSE
+      } else {
+        ok <- TRUE
+      }
     }
   }
   
@@ -290,12 +307,17 @@ x13_pickmdl <- function(series, spec, ...,
   
   sa <- x13(series = series, spec = spec, ...)
   
+  ok_final <- crit_ok(sa)
+  
   if (!is.null(when_finalnotok)) {
-    if (!crit_ok(sa)) {
+    if (!ok_final) {
       when_finalnotok("FINAL RUN NOT OK")
     }
   }
   
+  if (add_comment) {
+    comment(sa) <- c(ok = as.character(ok), ok_final = as.character(ok_final), mdl_nr = as.character(mdl_nr))
+  }
   
   if(output == "sa_spec"){
     return(list(sa = sa, spec = spec))
