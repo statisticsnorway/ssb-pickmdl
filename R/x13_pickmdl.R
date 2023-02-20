@@ -132,9 +132,9 @@
 #' k$crit_tab          # Table of criteria 
 #' 
 #' 
-#' # Effect of identify_outliers
+#' # Effect of identify_outliers (TRUE is default)
 #' q1 <- x13_pickmdl(myseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
-#'                   identification_end = c(2010, 2))
+#'                   identification_end = c(2010, 2), identify_outliers = FALSE)
 #' q2 <- x13_pickmdl(myseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
 #'                   identification_end = c(2010, 2), identify_outliers = TRUE, 
 #'                   verbose = TRUE, output = "all")
@@ -151,7 +151,7 @@ x13_pickmdl <- function(series, spec, ...,
                         when_finalnotok = NULL,
                         identification_end = NULL, identification_estimate.to = NULL, 
                         identify_t_filter = FALSE, identify_s_filter = FALSE, 
-                        identify_outliers = FALSE,
+                        identify_outliers = TRUE,
                         identify_arima_mu = TRUE,
                         automdl.enabled = FALSE,
                         fastfirst = TRUE,
