@@ -28,6 +28,10 @@ new outliers and updated \code{outlier.from}.
 \description{
 Update an \code{x13_spec} output object with outliers from an \code{x13} output object.
 }
+\note{
+For special use, parameter \code{sa} to \code{update_outliers} can be a
+data frame of outliers (as created by \code{\link{corona_outliers}}).
+}
 \examples{
 myseries <- ipi_c_eu[, "FR"]
 

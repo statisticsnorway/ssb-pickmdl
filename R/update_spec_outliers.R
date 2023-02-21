@@ -14,6 +14,9 @@
 #' @importFrom stats end frequency
 #' @importFrom RJDemetra s_span s_preOut
 #'
+#' @note For special use, parameter `sa` to `update_outliers` can be a 
+#'       data frame of outliers (as created by \code{\link{corona_outliers}}). 
+#' 
 #' @examples
 #' myseries <- ipi_c_eu[, "FR"]
 #' 
@@ -110,24 +113,30 @@ update_outliers <- function(spec, sa, day = "01", null_when_no_new = TRUE, verbo
   
   pre_date_mnd <- substr(pre$date, 1, 7)
   
-  sa_o <- sa_out(sa)
-  
-  if (length(sa_o)) {
-    sa_o <- sa_o[!(sa_o$date %in% substr(pre$date, 1, 7)), , drop = FALSE]
+  if (is.data.frame(sa)) {  # special use
+    sa_o <- sa[!(sa$date %in% pre$date), , drop = FALSE]
+    if (null_when_no_new & !nrow(sa_o)) {
+      return(NULL)
+    }
   } else {
-    sa_o <- matrix(0, 0, 0)  # nrow is 0
+    sa_o <- sa_out(sa)
+    
+    if (length(sa_o)) {
+      sa_o <- sa_o[!(sa_o$date %in% substr(pre$date, 1, 7)), , drop = FALSE]
+    } else {
+      sa_o <- matrix(0, 0, 0)  # nrow is 0
+    }
+    
+    if (null_when_no_new & !nrow(sa_o)) {
+      if(verbose) cat("  No new outliers.\n")
+      return(NULL)
+    }
+    if(verbose) cat("  New outliers:", paste(sa_o$date, collapse = ", "), "\n")
+    
+    sa_o$date <- paste(sa_o$date, day, sep = "-")
   }
-  
-  if (null_when_no_new & !nrow(sa_o)) {
-    if(verbose) cat("  No new outliers.\n")
-    return(NULL)
-  }
-  if(verbose) cat("  New outliers:", paste(sa_o$date, collapse = ", "), "\n")
-  
-  sa_o$date <- paste(sa_o$date, day, sep = "-")
   
   rbind(pre, sa_o)
-  
 }
 
 
