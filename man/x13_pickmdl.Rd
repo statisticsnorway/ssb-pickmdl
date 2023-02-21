@@ -8,6 +8,7 @@
 x13_pickmdl(
   series,
   spec,
+  corona = FALSE,
   ...,
   pickmdl_method = "first",
   star = 1,
@@ -35,6 +36,9 @@ x13_automdl(..., automdl.enabled = TRUE)
 \item{spec}{An \code{\link{x13_spec}} output object or a list of several objects as outputted from \code{\link{x13_spec_pickmdl}}.
 In the case of a single object and when \code{automdl.enabled} is \code{FALSE}, \code{spec} will be converted internally
 by \code{x13_spec_pickmdl} with default five arima model specifications.}
+
+\item{corona}{Whether to update \code{spec} by outliers according to \code{\link{corona_outliers}}.
+\code{FALSE} or \code{NULL} means no update. \code{TRUE} or \code{"ssb"} means update.}
 
 \item{...}{Further \code{x13} parameters (currently only parameter \code{userdefined} is additional parameter to \code{x13}).}
 
@@ -193,4 +197,15 @@ q3 <- x13_pickmdl(myseries, q2$spec, identification_end = c(2018, 2), identify_o
 q1$regarima
 q2$sa$regarima
 q3$regarima
+
+
+# With corona outliers (even possible when series is not long enough) 
+ac <- x13_pickmdl(myseries, spec_a, verbose = TRUE, corona = TRUE)
+ac$regarima
+q4 <- x13_pickmdl(myseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
+                  identification_end = c(2010, 2), identify_outliers = TRUE, 
+                  verbose = TRUE, corona = TRUE) 
+q4$regarima  
+    
+
 }

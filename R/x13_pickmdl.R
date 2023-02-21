@@ -8,6 +8,8 @@
 #' @param spec An \code{\link{x13_spec}} output object or a list of several objects as outputted from \code{\link{x13_spec_pickmdl}}. 
 #'             In the case of a single object and when `automdl.enabled` is `FALSE`, `spec` will be converted internally 
 #'             by `x13_spec_pickmdl` with default five arima model specifications. 
+#' @param corona Whether to update `spec` by outliers according to \code{\link{corona_outliers}}.  
+#'               `FALSE` or `NULL` means no update. `TRUE` or `"ssb"` means update.         
 #' @param ... Further `x13` parameters (currently only parameter `userdefined` is additional parameter to `x13`).
 #' @param pickmdl_method \code{\link{crit_selection}} parameter 
 #'         or one of the two extra possibilities, `"first_automdl"` or `"first_tryautomdl"`.
@@ -144,7 +146,19 @@
 #' q1$regarima
 #' q2$sa$regarima
 #' q3$regarima
-x13_pickmdl <- function(series, spec, ..., 
+#' 
+#' 
+#' # With corona outliers (even possible when series is not long enough) 
+#' ac <- x13_pickmdl(myseries, spec_a, verbose = TRUE, corona = TRUE)
+#' ac$regarima
+#' q4 <- x13_pickmdl(myseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
+#'                   identification_end = c(2010, 2), identify_outliers = TRUE, 
+#'                   verbose = TRUE, corona = TRUE) 
+#' q4$regarima  
+#'     
+#' 
+x13_pickmdl <- function(series, spec, 
+                        corona = FALSE, ..., 
                         pickmdl_method = "first", star = 1, 
                         when_star = warning,
                         when_automdl = message,
@@ -159,6 +173,14 @@ x13_pickmdl <- function(series, spec, ...,
                         output = "sa",
                         add_comment = TRUE) {
   
+  
+  if (is.logical(corona)) {
+    if (corona) {
+      corona <- "ssb"
+    } else {
+      corona <- NULL
+    }
+  }
   
   if(!(output %in% c("sa", "spec", "sa_spec", "all")))
     stop('Allowed values of parameter output are "sa", "spec", "sa_spec" and "all".')
@@ -185,6 +207,23 @@ x13_pickmdl <- function(series, spec, ...,
       } else {
         spec <- x13_spec_pickmdl(spec)
       }
+    }
+  }
+  
+  if (!is.null(corona)) {  # Because of possible error (bug) only include outliers within estimation span 
+    end_ts <- end(ts(1:2, start = end(window(series, end = identification_end)), frequency = frequency(series)))
+    end_ts_final <- end(ts(1:2, start = end(series), frequency = frequency(series)))
+    if (frequency(series) == 4) {
+      end_ts[2] <- 1 + (end_ts[2] - 1) * 3
+      end_ts_final[2] <- 1 + (end_ts_final[2] - 1) * 3
+    }
+    outlier_date_limit <- paste(end_ts[1], Number(end_ts[2], 2), "01", sep = "-")
+    outlier_date_limit_final <- paste(end_ts_final[1], Number(end_ts_final[2], 2), "01", sep = "-")
+    if (!is.null(identification_estimate.to)) {
+      outlier_date_limit <- identification_estimate.to
+    }
+    for (i in seq_along(spec)) {
+      spec[[i]] <- update_spec_corona_outliers(spec[[i]], option = corona, outlier_date_limit = outlier_date_limit)
     }
   }
   
@@ -295,6 +334,11 @@ x13_pickmdl <- function(series, spec, ...,
     if (verbose) {
       print(unlist(filters)[c(identify_t_filter, identify_s_filter)], quote = FALSE)
     }
+  }
+  
+  
+  if (!is.null(corona)) { # Because of new final limit possible extra outliers included  
+    spec <- update_spec_corona_outliers(spec, option = corona, outlier_date_limit = outlier_date_limit_final)
   }
   
   if (identify_outliers) {

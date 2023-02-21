@@ -12,7 +12,8 @@ update_spec_corona_outliers(
   option = "ssb",
   freq = 12,
   day = "01",
-  q_month = 1
+  q_month = 1,
+  outlier_date_limit = "3000-01-01"
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ update_spec_corona_outliers(
 \item{q_month}{month of quarter as \code{1}, \code{2} or \code{3}}
 
 \item{spec}{An \code{\link{x13_spec}} output object to be updated}
+
+\item{outlier_date_limit}{Only outliers with \code{date < outlier_date_limit} will be included in updated spec.}
 }
 \value{
 data frame
@@ -48,7 +51,7 @@ spec_b <- x13_spec(spec = "RSA3", transform.function = "Log",
                    usrdef.outliersEnabled = TRUE, 
                    usrdef.outliersType = rep("AO", 3), 
                    usrdef.outliersDate = c("2009-01-01", "2016-01-01", "2020-05-01"))
-spec_b2 <- update_spec_corona_outliers(spec_b)
+spec_b2 <- update_spec_corona_outliers(spec_b, outlier_date_limit = "2021-11-01")
 s_preOut(spec_b)
 s_preOut(spec_b2)
 }
