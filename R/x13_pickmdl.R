@@ -223,7 +223,7 @@ x13_pickmdl <- function(series, spec,
       outlier_date_limit <- identification_estimate.to
     }
     for (i in seq_along(spec)) {
-      spec[[i]] <- update_spec_corona_outliers(spec[[i]], option = corona, outlier_date_limit = outlier_date_limit)
+      spec[[i]] <- update_spec_corona_outliers(spec[[i]], option = corona, outlier_date_limit = outlier_date_limit, freq = frequency(series))
     }
   }
   
@@ -338,7 +338,7 @@ x13_pickmdl <- function(series, spec,
   
   
   if (!is.null(corona)) { # Because of new final limit possible extra outliers included  
-    spec <- update_spec_corona_outliers(spec, option = corona, outlier_date_limit = outlier_date_limit_final)
+    spec <- update_spec_corona_outliers(spec, option = corona, outlier_date_limit = outlier_date_limit_final, freq = frequency(series))
   }
   
   if (identify_outliers) {

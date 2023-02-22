@@ -43,17 +43,27 @@ update_spec_outliers <- function(spec, sa, day = "01", verbose = FALSE) {
   
   freq = frequency(sa$final$series)
   
-  if (freq  != 12) {
-    stop("Only frequency==12 implemented")
+  if (!(freq %in%  c(4, 12))) {
+    stop("Only frequencies 4 and 12 implemented")
   }
   
   # sa$regarima$model$spec_rslt$T.span is "dangerous" hack
   # but general solution (s_span(sa) is not and end of series is not)
   end_span = strsplit(sa$regarima$model$spec_rslt$T.span, split="to ")[[1]][2]
   
-  end_span_integer = rev(as.integer(strsplit(end_span, split = "-")[[1]]))
+  if (freq == 12) {
+    end_span_integer <- rev(as.integer(strsplit(end_span, split = "-")[[1]]))
+  } else { # freq == 4
+    strsplit_end_span <- strsplit(end_span, split = "-")[[1]]
+    end_span_integer <- c(as.integer(strsplit_end_span[2]), 
+                          as.integer(factor(strsplit_end_span[1], levels = c("I", "II", "III", "IV"))))
+  }
   
   new_from_integer = end(ts(1:2, start = end_span_integer, frequency = freq))
+  
+  if (freq == 4) {
+    new_from_integer[2] <- 1 + (new_from_integer[2] - 1) * 3
+  }
   
   from_ <- sub(".", "-", sprintf("%7.2f", (new_from_integer[1] + new_from_integer[2]/100)), fixed = TRUE)
   new_outlier.from <- paste(from_, day, sep = "-")
@@ -156,7 +166,13 @@ sa_out <- function(a) {
   }
   k <- k[kis3]
   year <- as.integer(sapply(k, function(x) x[3]))
-  month <- as.integer(sapply(k, function(x) x[2]))
+  #month <- as.integer(sapply(k, function(x) x[2]))
+  k2 <- sapply(k, function(x) x[2])
+  k2[k2 == "I"] <- "1"
+  k2[k2 == "II"] <- "4"
+  k2[k2 == "III"] <- "7"
+  k2[k2 == "IV"] <- "10"
+  month <- as.integer(k2)
   date_mnd <- sub(".", "-", sprintf("%7.2f", (year + month/100)), fixed = TRUE)
   
   type <- trimws(sapply(k, function(x) x[1]))
