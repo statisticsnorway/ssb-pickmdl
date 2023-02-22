@@ -351,6 +351,17 @@ x13_pickmdl <- function(series, spec,
   
   sa <- x13(series = series, spec = spec, ...)
   
+  # Include possibility to check differences.
+  # Seen that !isTRUE(all_equal) happen as result of specified outlier at end of series.
+  # End outlier not included in first model, but included after outlier.from updated. 
+  if (is.null(identification_end) & is.null(identification_estimate.to)) {
+    if (get0("check_all.equal", ifnotfound = FALSE)) {
+      all_equal <- all.equal(sa$final$series, sa_mult[[mdl_nr]]$final$series)
+      if (isTRUE(all_equal))
+        message(all_equal) else warning(all_equal)
+    }
+  }
+  
   ok_final <- crit_ok(sa)
   
   if (!is.null(when_finalnotok)) {
