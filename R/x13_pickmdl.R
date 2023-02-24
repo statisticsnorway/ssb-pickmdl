@@ -184,6 +184,19 @@
 #' q5$regarima 
 #' 
 #' 
+#' # Demonstrate strange behavior of x13 with TC at end. Updating outlier.from matters.
+#' q11 <- x13(window(qseries, end = c(2020, 1)), 
+#'     spec = x13_spec(spec = "RSA3", transform.function = "Log", 
+#'     usrdef.outliersEnabled = TRUE, usrdef.outliersType = "TC", 
+#'     usrdef.outliersDate = "2020-01-01"))  
+#' q12 <- x13(window(qseries, end = c(2020, 1)), # same with outlier.from 
+#'     spec = x13_spec(spec = "RSA3", transform.function = "Log", 
+#'     usrdef.outliersEnabled = TRUE, usrdef.outliersType = "TC", 
+#'     usrdef.outliersDate = "2020-01-01", outlier.from = "2020-04-01")) 
+#' q11$regarima 
+#' q12$regarima
+#' 
+#' 
 x13_pickmdl <- function(series, spec, 
                         corona = FALSE, ..., 
                         pickmdl_method = "first", star = 1, 
