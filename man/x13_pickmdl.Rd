@@ -236,6 +236,7 @@ q5$regarima
 
 
 # Demonstrate strange behavior of x13 with TC at end. Updating outlier.from matters.
+# Explains why TC (III-2021) is in q4 and not in q5 
 q11 <- x13(window(qseries, end = c(2020, 1)), 
     spec = x13_spec(spec = "RSA3", transform.function = "Log", 
     usrdef.outliersEnabled = TRUE, usrdef.outliersType = "TC", 
