@@ -5,18 +5,27 @@
 \alias{update_outliers}
 \title{Update x13 spec with outliers}
 \usage{
-update_spec_outliers(spec, sa, day = "01", verbose = FALSE)
+update_spec_outliers(
+  sa,
+  spec = NULL,
+  day = "01",
+  verbose = FALSE,
+  input_output = is.null(spec)
+)
 
-update_outliers(spec, sa, day = "01", null_when_no_new = TRUE, verbose = FALSE)
+update_outliers(sa, spec, day = "01", null_when_no_new = TRUE, verbose = FALSE)
 }
 \arguments{
-\item{spec}{An \code{\link{x13_spec}} output object}
-
 \item{sa}{An \code{\link{x13}} output object}
+
+\item{spec}{An \code{\link{x13_spec}} output object}
 
 \item{day}{Day of month as character to be used in outlier coding}
 
 \item{verbose}{Printing information to console when \code{TRUE}.}
+
+\item{input_output}{When \code{TRUE} output is a list of \code{x13_spec} parameters
+instead of an updated spec.}
 
 \item{null_when_no_new}{Whether to return \code{NULL} when no new outliers found.}
 }
@@ -43,9 +52,9 @@ spec_2 <- x13_spec(spec_1, estimate.to = "2018-08-01")
 
 a <- x13(myseries, spec_2)
 
-update_outliers(spec_1, a)
+update_outliers(a, spec_1)
 
-spec_3 <- update_spec_outliers(spec_1, a)
+spec_3 <- update_spec_outliers(a, spec_1)
 
 s_span(spec_1)
 s_span(spec_2)
@@ -54,4 +63,6 @@ s_span(spec_3)
 s_preOut(spec_1)
 s_preOut(spec_2)
 s_preOut(spec_3)
+
+update_spec_outliers(a)
 }

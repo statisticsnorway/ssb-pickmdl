@@ -2,10 +2,12 @@
 #' 
 #' Update an `x13_spec` output object with outliers from an `x13` output object.
 #'
-#' @param spec An \code{\link{x13_spec}} output object 
 #' @param sa   An \code{\link{x13}} output object
+#' @param spec An \code{\link{x13_spec}} output object 
 #' @param day Day of month as character to be used in outlier coding 
 #' @param verbose Printing information to console when `TRUE`.
+#' @param input_output When `TRUE` output is a list of `x13_spec` parameters 
+#'                     instead of an updated spec.     
 #'
 #' @return `update_spec_outliers` returns an updated `x13_spec` output object with
 #'          new outliers and updated `outlier.from`.  
@@ -28,9 +30,9 @@
 #' 
 #' a <- x13(myseries, spec_2)
 #' 
-#' update_outliers(spec_1, a)
+#' update_outliers(a, spec_1)
 #' 
-#' spec_3 <- update_spec_outliers(spec_1, a)
+#' spec_3 <- update_spec_outliers(a, spec_1)
 #' 
 #' s_span(spec_1)
 #' s_span(spec_2)
@@ -39,7 +41,9 @@
 #' s_preOut(spec_1)
 #' s_preOut(spec_2)
 #' s_preOut(spec_3)
-update_spec_outliers <- function(spec, sa, day = "01", verbose = FALSE) {
+#' 
+#' update_spec_outliers(a)
+update_spec_outliers <- function(sa, spec = NULL, day = "01", verbose = FALSE, input_output = is.null(spec)) {
   
   freq = frequency(sa$final$series)
   
@@ -68,30 +72,45 @@ update_spec_outliers <- function(spec, sa, day = "01", verbose = FALSE) {
   from_ <- sub(".", "-", sprintf("%7.2f", (new_from_integer[1] + new_from_integer[2]/100)), fixed = TRUE)
   new_outlier.from <- paste(from_, day, sep = "-")
   
-  
-  s_span_ <- s_span(spec)
-  old_outlier.from <- s_span_[rownames(s_span_) == "outlier", "d0"]
-  
-  # as.character to avoid "‘<=’ not meaningful for factors" in old r versions 
-  old_outlier.from <- as.character(old_outlier.from)   
+  if(!is.null(spec)){
+    s_span_ <- s_span(spec)
+    old_outlier.from <- s_span_[rownames(s_span_) == "outlier", "d0"]
+    
+    # as.character to avoid "‘<=’ not meaningful for factors" in old r versions 
+    old_outlier.from <- as.character(old_outlier.from)   
+  } else {
+    old_outlier.from <- NA
+  }
   
   if (is.na(old_outlier.from)){
     old_outlier.from <- "0000-00-00"  ## To be used in comparison below 
   }
   
+  
   if (new_outlier.from <= old_outlier.from) {
     if(verbose) cat("outlier.from not updated:", old_outlier.from, "\n")
-    return(spec)
+    if (input_output) {
+      new_outlier.from <- old_outlier.from
+    } else {
+      return(spec)
+    } 
   }
   
-  spec <- x13_spec(spec, outlier.from = new_outlier.from)
+  if (!input_output) {
+    spec <- x13_spec(spec, outlier.from = new_outlier.from)
+  }
   
   if(verbose) cat("outlier.from updated:", new_outlier.from)
   
-  updated <- update_outliers(spec = spec, sa = sa, day = day, null_when_no_new = TRUE, verbose = verbose)
+  updated <- update_outliers(sa = sa, spec = spec, day = day, null_when_no_new = !input_output, verbose = verbose)
   
   if (is.null(updated)) {
     return(spec)
+  }
+  
+  if (input_output) {
+    return(list(outlier.from = new_outlier.from, 
+                 usrdef.outliersEnabled = TRUE, usrdef.outliersType = as.character(updated$type), usrdef.outliersDate = as.character(updated$date)))
   }
   
   # as.character for old r versions 
@@ -102,11 +121,14 @@ update_spec_outliers <- function(spec, sa, day = "01", verbose = FALSE) {
 #' @rdname update_spec_outliers
 #' @param null_when_no_new Whether to return `NULL` when no new outliers found. 
 #' @export
-update_outliers <- function(spec, sa, day = "01", null_when_no_new = TRUE, verbose = FALSE) {
+update_outliers <- function(sa, spec, day = "01", null_when_no_new = TRUE, verbose = FALSE) {
   
-  pre <- s_preOut(spec)
-  
-  
+  if(!is.null(spec)){
+    pre <- s_preOut(spec)
+  } else {
+    pre <- NULL
+  }
+
   if(is.data.frame(pre)){
     pre <- ForceCharacterDataFrame(pre) # for old r versions 
   }
@@ -134,7 +156,8 @@ update_outliers <- function(spec, sa, day = "01", null_when_no_new = TRUE, verbo
     if (length(sa_o)) {
       sa_o <- sa_o[!(sa_o$date %in% substr(pre$date, 1, 7)), , drop = FALSE]
     } else {
-      sa_o <- matrix(0, 0, 0)  # nrow is 0
+      #sa_o <- matrix(0, 0, 0)  # nrow is 0
+      sa_o <- data.frame(type = character(0), date = character(0)) # Better when !null_when_no_new 
     }
     
     if (null_when_no_new & !nrow(sa_o)) {
@@ -143,7 +166,9 @@ update_outliers <- function(spec, sa, day = "01", null_when_no_new = TRUE, verbo
     }
     if(verbose) cat("  New outliers:", paste(sa_o$date, collapse = ", "), "\n")
     
-    sa_o$date <- paste(sa_o$date, day, sep = "-")
+    if (nrow(sa_o)) {
+      sa_o$date <- paste(sa_o$date, day, sep = "-")
+    }
   }
   
   rbind(pre, sa_o)

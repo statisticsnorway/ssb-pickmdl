@@ -63,7 +63,7 @@ update_spec_corona_outliers <- function(spec, option = "ssb", freq = 12, day = "
   co <- corona_outliers(option = option, freq = freq, day = day, q_month = q_month)
   co <- co[co$date < outlier_date_limit, , drop = FALSE]
   if (nrow(co)) {
-    updated <- update_outliers(spec = spec, sa = co, day = day)  # as.character for old r versions
+    updated <- update_outliers(sa = co, spec = spec, day = day)  # as.character for old r versions
   } else {
     updated <- NULL
   }

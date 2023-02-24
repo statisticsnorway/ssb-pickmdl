@@ -342,7 +342,7 @@ x13_pickmdl <- function(series, spec,
   }
   
   if (identify_outliers) {
-      spec <- update_spec_outliers(spec, sa_mult[[mdl_nr]], verbose = verbose)
+      spec <- update_spec_outliers(sa = sa_mult[[mdl_nr]], spec = spec, verbose = verbose)
   }
   
   if(output == "spec"){
