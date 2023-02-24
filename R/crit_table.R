@@ -45,9 +45,10 @@ crit123_m_aic <- function(sa){
 #' @export
 crit1 <- function(sa){
   input_series <- sa$final$series[,"y"]
+  freq <- frequency(input_series)
   rest_l     <- sa$regarima$residuals
-  rest_l1    <- tail(rest_l, 36)
-  resid1_pct <- 100 * rest_l1 / tail(input_series, 36)  ## data_inn1
+  rest_l1    <- tail(rest_l, 3 * freq)
+  resid1_pct <- 100 * rest_l1 / tail(input_series, 3 * freq)  ## data_inn1
   mean(abs(resid1_pct))
 } 
 

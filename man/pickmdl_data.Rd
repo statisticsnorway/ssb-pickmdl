@@ -26,6 +26,7 @@ Function that returns an r object with data
 }
 \examples{
 pickmdl_data("myseries")
+pickmdl_data("qseries")
 pickmdl_data("allvar")
 pickmdl_data("datainn")
 pickmdl_data("kalendernr3")

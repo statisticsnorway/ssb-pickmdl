@@ -223,7 +223,7 @@ x13_pickmdl <- function(series, spec,
       outlier_date_limit <- identification_estimate.to
     }
     for (i in seq_along(spec)) {
-      spec[[i]] <- update_spec_corona_outliers(spec[[i]], option = corona, outlier_date_limit = outlier_date_limit)
+      spec[[i]] <- update_spec_corona_outliers(spec[[i]], option = corona, outlier_date_limit = outlier_date_limit, freq = frequency(series))
     }
   }
   
@@ -338,7 +338,7 @@ x13_pickmdl <- function(series, spec,
   
   
   if (!is.null(corona)) { # Because of new final limit possible extra outliers included  
-    spec <- update_spec_corona_outliers(spec, option = corona, outlier_date_limit = outlier_date_limit_final)
+    spec <- update_spec_corona_outliers(spec, option = corona, outlier_date_limit = outlier_date_limit_final, freq = frequency(series))
   }
   
   if (identify_outliers) {
@@ -350,6 +350,17 @@ x13_pickmdl <- function(series, spec,
   }
   
   sa <- x13(series = series, spec = spec, ...)
+  
+  # Include possibility to check differences.
+  # Seen that !isTRUE(all_equal) happen as result of specified outlier at end of series.
+  # End outlier not included in first model, but included after outlier.from updated. 
+  if (is.null(identification_end) & is.null(identification_estimate.to)) {
+    if (get0("check_all.equal", ifnotfound = FALSE)) {
+      all_equal <- all.equal(sa$final$series, sa_mult[[mdl_nr]]$final$series)
+      if (isTRUE(all_equal))
+        message(all_equal) else warning(all_equal)
+    }
+  }
   
   ok_final <- crit_ok(sa)
   

@@ -19,6 +19,7 @@
 #'
 #' @examples
 #' pickmdl_data("myseries")
+#' pickmdl_data("qseries")
 #' pickmdl_data("allvar")
 #' pickmdl_data("datainn")
 #' pickmdl_data("kalendernr3")
@@ -32,6 +33,12 @@ pickmdl_data <- function(dataset){
     datainn <- pickmdl_data("datainn")
     myseries <- ts(datainn, start = c(forstear, 1), frequency = 12)
     return(myseries)
+  }
+  
+  if(dataset == "qseries"){
+    datainn <- pickmdl_data("datainn")
+    qseries <- ts(datainn[2 + (0:66) * 3], start = c(forstear, 1), frequency = 4)
+    return(qseries)
   }
   
   if(dataset == "allvar"){
