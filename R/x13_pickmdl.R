@@ -135,12 +135,39 @@
 #' 
 #' 
 #' # Effect of identify_outliers (TRUE is default)
-#' q1 <- x13_pickmdl(myseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
+#' m1 <- x13_pickmdl(myseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
 #'                   identification_end = c(2010, 2), identify_outliers = FALSE)
-#' q2 <- x13_pickmdl(myseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
+#' m2 <- x13_pickmdl(myseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
 #'                   identification_end = c(2010, 2), identify_outliers = TRUE, 
 #'                   verbose = TRUE, output = "all")
-#' q3 <- x13_pickmdl(myseries, q2$spec, identification_end = c(2018, 2), identify_outliers = TRUE, 
+#' m3 <- x13_pickmdl(myseries, m2$spec, identification_end = c(2018, 2), identify_outliers = TRUE, 
+#'                   verbose = TRUE)
+#' 
+#' m1$regarima
+#' m2$sa$regarima
+#' m3$regarima
+#' 
+#' 
+#' # With corona outliers (even possible when series is not long enough) 
+#' m4 <- x13_pickmdl(myseries, spec_a, verbose = TRUE, corona = TRUE)
+#' m4$regarima
+#' m5 <- x13_pickmdl(myseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
+#'                   identification_end = c(2010, 2), identify_outliers = TRUE, 
+#'                   verbose = TRUE, corona = TRUE) 
+#' m5$regarima 
+#' 
+#'  
+#' ###########  quarterly series  #############
+#'    
+#' qseries <- pickmdl_data("qseries")    
+#' 
+#' # Effect of identify_outliers (TRUE is default)
+#' q1 <- x13_pickmdl(qseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
+#'                   identification_end = c(2010, 2), identify_outliers = FALSE)
+#' q2 <- x13_pickmdl(qseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
+#'                   identification_end = c(2010, 2), identify_outliers = TRUE, 
+#'                   verbose = TRUE, output = "all")
+#' q3 <- x13_pickmdl(qseries, q2$spec, identification_end = c(2018, 2), identify_outliers = TRUE, 
 #'                   verbose = TRUE)
 #' 
 #' q1$regarima
@@ -149,13 +176,13 @@
 #' 
 #' 
 #' # With corona outliers (even possible when series is not long enough) 
-#' ac <- x13_pickmdl(myseries, spec_a, verbose = TRUE, corona = TRUE)
-#' ac$regarima
-#' q4 <- x13_pickmdl(myseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
+#' q4 <- x13_pickmdl(qseries, spec_a, verbose = TRUE, corona = TRUE)
+#' q4$regarima
+#' q5 <- x13_pickmdl(qseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
 #'                   identification_end = c(2010, 2), identify_outliers = TRUE, 
 #'                   verbose = TRUE, corona = TRUE) 
-#' q4$regarima  
-#'     
+#' q5$regarima 
+#' 
 #' 
 x13_pickmdl <- function(series, spec, 
                         corona = FALSE, ..., 
