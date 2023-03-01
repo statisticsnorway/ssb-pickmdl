@@ -53,7 +53,7 @@ corona_outliers <- function(option = "ssb", freq = 12, day = "01", q_month = 1) 
   if (freq == 12) {
     dates <- dates[3:27]
   }
-  data.frame(type = "TC", date = dates)
+  data.frame(type = "TC", date = dates, stringsAsFactors = FALSE)
 }
 
 

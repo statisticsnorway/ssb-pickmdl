@@ -157,7 +157,7 @@ update_outliers <- function(sa, spec, day = "01", null_when_no_new = TRUE, verbo
       sa_o <- sa_o[!(sa_o$date %in% substr(pre$date, 1, 7)), , drop = FALSE]
     } else {
       #sa_o <- matrix(0, 0, 0)  # nrow is 0
-      sa_o <- data.frame(type = character(0), date = character(0)) # Better when !null_when_no_new 
+      sa_o <- data.frame(type = character(0), date = character(0), stringsAsFactors = FALSE) # Better when !null_when_no_new 
     }
     
     if (null_when_no_new & !nrow(sa_o)) {
