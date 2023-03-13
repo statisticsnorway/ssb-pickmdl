@@ -8,18 +8,24 @@
 x13_pickmdl(
   series,
   spec,
+  corona = FALSE,
   ...,
   pickmdl_method = "first",
   star = 1,
   when_star = warning,
+  when_automdl = message,
+  when_finalnotok = NULL,
   identification_end = NULL,
   identification_estimate.to = NULL,
   identify_t_filter = FALSE,
   identify_s_filter = FALSE,
-  identify_outliers = FALSE,
+  identify_outliers = TRUE,
+  identify_arima_mu = TRUE,
   automdl.enabled = FALSE,
+  fastfirst = TRUE,
   verbose = FALSE,
-  output = "sa"
+  output = "sa",
+  add_comment = TRUE
 )
 
 x13_automdl(..., automdl.enabled = TRUE)
@@ -31,13 +37,29 @@ x13_automdl(..., automdl.enabled = TRUE)
 In the case of a single object and when \code{automdl.enabled} is \code{FALSE}, \code{spec} will be converted internally
 by \code{x13_spec_pickmdl} with default five arima model specifications.}
 
+\item{corona}{Whether to update \code{spec} by outliers according to \code{\link{corona_outliers}}.
+\code{FALSE} or \code{NULL} means no update. \code{TRUE} or \code{"ssb"} means update.}
+
 \item{...}{Further \code{x13} parameters (currently only parameter \code{userdefined} is additional parameter to \code{x13}).}
 
-\item{pickmdl_method}{\code{\link{crit_selection}} parameter}
+\item{pickmdl_method}{\code{\link{crit_selection}} parameter
+or one of the two extra possibilities, \code{"first_automdl"} or \code{"first_tryautomdl"}.
+In both cases the \code{crit_selection} parameter is \code{"first"} and the automdl model is added as the last pickmdl model.
+\itemize{
+\item \strong{\code{"first_automdl"}:} The automdl model is chosen whenever no pickmdl model is ok.
+In other words, the \code{star} parameter changes.
+\item \strong{\code{"first_tryautomdl"}:} When no pickmdl model is ok:  The automdl model is chosen if this model is ok,
+otherwise the \code{star} model is chosen.
+}}
 
 \item{star}{\code{\link{crit_selection}} parameter}
 
 \item{when_star}{\code{\link{crit_selection}} parameter}
+
+\item{when_automdl}{Function to be called when automdl since no pickmdl model ok. Supply NULL to do nothing.}
+
+\item{when_finalnotok}{Function to be called, e.g. \code{\link{warning}}, when final run with final model is not ok. Supply NULL to do nothing.
+See \code{\link{crit_ok}}.}
 
 \item{identification_end}{To shorten the series before runs used to identify (arima) parameters.
 That is, the series is shortened by \verb{window(series,} \verb{end = identification_end)}.}
@@ -51,12 +73,23 @@ This is an alternative to  \code{identification_end}.}
 
 \item{identify_outliers}{When \code{TRUE}, Outliers are identified by the shortened series.}
 
+\item{identify_arima_mu}{When \code{TRUE}, \code{arima.mu} is identified by the shortened series (see \code{\link{arima_mu}}).}
+
 \item{automdl.enabled}{When \code{TRUE}, automdl is performed instead of pickmdl.
 If \code{spec} is a list of several objects as outputted from \code{x13_spec_pickmdl}, only first object is used.}
+
+\item{fastfirst}{When \code{TRUE} and when pickmdl with \code{crit_selection} parameter \code{"first"},
+only as many models as needed are run.
+This affects the output when \code{output = "all"}.}
 
 \item{verbose}{Printing information to console when \code{TRUE}.}
 
 \item{output}{One of \code{"sa"} (default), \code{"spec"} (final spec), \code{"sa_spec"} (both) and \code{"all"}. See examples.}
+
+\item{add_comment}{When \code{TRUE}, a  comment attribute
+(character vector with \code{ok}, \code{ok_final} and \code{mdl_nr}) will
+be added to the \code{\link{x13}} output object. Use \code{\link{comment}}
+to get the attribute or \code{\link{ok}} to get the attribute converted to a list.}
 }
 \value{
 By default an \code{x13} output object, or otherwise a list as specified by parameter \code{output}.
@@ -71,6 +104,9 @@ myseries <- pickmdl_data("myseries")
 spec_a  <- x13_spec(spec = "RSA3", transform.function = "Log")
 
 a <- x13_pickmdl(myseries, spec_a, verbose = TRUE)
+comment(a)
+ok(a)
+unlist(ok(a))
 a$regarima
 
 a2 <- x13_pickmdl(myseries, spec_a, identification_end = c(2014, 2))
@@ -133,25 +169,84 @@ d <- x13_pickmdl(myseries, spec_d, verbose = TRUE)
 # Warning avoided (when_star) and 2nd (star) model selected 
 d2 <- x13_pickmdl(myseries, spec_d, star = 2, when_star = NULL, verbose = TRUE)
 
+# automdl since no pickmdl model ok, but still not ok 
+d3 <- x13_pickmdl(myseries, spec_d, pickmdl_method = "first_automdl", verbose = TRUE)
+
+# airline model (star) since automdl also not ok 
+d4 <- x13_pickmdl(myseries, spec_d, pickmdl_method = "first_tryautomdl", verbose = TRUE,
+                  when_finalnotok = warning) # also finalnotok warning
 
 # As a2, with output = "all"
-k <- x13_pickmdl(myseries, spec_b, identification_end = c(2010, 2), output = "all")
+k <- x13_pickmdl(myseries, spec_b, identification_end = c(2010, 2), output = "all",
+                 fastfirst = FALSE) # With TRUE only one model in this case 
 k$sa$decomposition  # As a2$decomposition 
 k$mdl_nr            # index of selected model used to identify parameters
 k$sa_mult[[k$mdl_nr]]$decomposition  # decomposition for model to identify
 k$crit_tab          # Table of criteria 
 
 
-# Effect of identify_outliers
-q1 <- x13_pickmdl(myseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
-                  identification_end = c(2010, 2))
-q2 <- x13_pickmdl(myseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
+# Effect of identify_outliers (TRUE is default)
+m1 <- x13_pickmdl(myseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
+                  identification_end = c(2010, 2), identify_outliers = FALSE)
+m2 <- x13_pickmdl(myseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
                   identification_end = c(2010, 2), identify_outliers = TRUE, 
                   verbose = TRUE, output = "all")
-q3 <- x13_pickmdl(myseries, q2$spec, identification_end = c(2018, 2), identify_outliers = TRUE, 
+m3 <- x13_pickmdl(myseries, m2$spec, identification_end = c(2018, 2), identify_outliers = TRUE, 
+                  verbose = TRUE)
+
+m1$regarima
+m2$sa$regarima
+m3$regarima
+
+
+# With corona outliers (even possible when series is not long enough) 
+m4 <- x13_pickmdl(myseries, spec_a, verbose = TRUE, corona = TRUE)
+m4$regarima
+m5 <- x13_pickmdl(myseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
+                  identification_end = c(2010, 2), identify_outliers = TRUE, 
+                  verbose = TRUE, corona = TRUE) 
+m5$regarima 
+
+ 
+###########  quarterly series  #############
+   
+qseries <- pickmdl_data("qseries")    
+
+# Effect of identify_outliers (TRUE is default)
+q1 <- x13_pickmdl(qseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
+                  identification_end = c(2010, 2), identify_outliers = FALSE)
+q2 <- x13_pickmdl(qseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
+                  identification_end = c(2010, 2), identify_outliers = TRUE, 
+                  verbose = TRUE, output = "all")
+q3 <- x13_pickmdl(qseries, q2$spec, identification_end = c(2018, 2), identify_outliers = TRUE, 
                   verbose = TRUE)
 
 q1$regarima
 q2$sa$regarima
 q3$regarima
+
+
+# With corona outliers (even possible when series is not long enough) 
+q4 <- x13_pickmdl(qseries, spec_a, verbose = TRUE, corona = TRUE)
+q4$regarima
+q5 <- x13_pickmdl(qseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
+                  identification_end = c(2010, 2), identify_outliers = TRUE, 
+                  verbose = TRUE, corona = TRUE) 
+q5$regarima 
+
+
+# Demonstrate strange behavior of x13 with TC at end. Updating outlier.from matters.
+# Explains why TC (III-2021) is in q4 and not in q5 
+q11 <- x13(window(qseries, end = c(2020, 1)), 
+    spec = x13_spec(spec = "RSA3", transform.function = "Log", 
+    usrdef.outliersEnabled = TRUE, usrdef.outliersType = "TC", 
+    usrdef.outliersDate = "2020-01-01"))  
+q12 <- x13(window(qseries, end = c(2020, 1)), # same with outlier.from 
+    spec = x13_spec(spec = "RSA3", transform.function = "Log", 
+    usrdef.outliersEnabled = TRUE, usrdef.outliersType = "TC", 
+    usrdef.outliersDate = "2020-01-01", outlier.from = "2020-04-01")) 
+q11$regarima 
+q12$regarima
+
+
 }

@@ -29,7 +29,15 @@ x13_both(
 
 \item{userdefined}{Parameter to \code{\link{x13}}  (via \code{...}  to \code{x13_pickmdl}).}
 
-\item{pickmdl_method}{\code{\link{crit_selection}} parameter}
+\item{pickmdl_method}{\code{\link{crit_selection}} parameter
+or one of the two extra possibilities, \code{"first_automdl"} or \code{"first_tryautomdl"}.
+In both cases the \code{crit_selection} parameter is \code{"first"} and the automdl model is added as the last pickmdl model.
+\itemize{
+\item \strong{\code{"first_automdl"}:} The automdl model is chosen whenever no pickmdl model is ok.
+In other words, the \code{star} parameter changes.
+\item \strong{\code{"first_tryautomdl"}:} When no pickmdl model is ok:  The automdl model is chosen if this model is ok,
+otherwise the \code{star} model is chosen.
+}}
 
 \item{star}{\code{\link{crit_selection}} parameter}
 

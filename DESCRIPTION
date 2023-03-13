@@ -1,8 +1,8 @@
 Package: pickmdl
 Type: Package
 Title: PICKMDL for RJDemetra
-Version: 0.2.0
-Date: 2022-12-02
+Version: 0.3.0
+Date: 2023-03-13
 Authors@R: c(person("Øyvind", "Langsrud", role = c("aut", "cre"), email = "oyl@ssb.no"),
              person("Dinh Quang", "Pham", role = c("aut")),
              person("Ane", "Seierstad", role = c("aut")))
@@ -13,4 +13,7 @@ Description: PICKMDL for RJDemetra.
 License: Apache License 2.0 | file LICENSE
 Roxygen: list(markdown = TRUE)
 Encoding: UTF-8
-RoxygenNote: 7.2.2
+RoxygenNote: 7.2.3
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

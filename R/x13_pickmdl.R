@@ -8,10 +8,21 @@
 #' @param spec An \code{\link{x13_spec}} output object or a list of several objects as outputted from \code{\link{x13_spec_pickmdl}}. 
 #'             In the case of a single object and when `automdl.enabled` is `FALSE`, `spec` will be converted internally 
 #'             by `x13_spec_pickmdl` with default five arima model specifications. 
+#' @param corona Whether to update `spec` by outliers according to \code{\link{corona_outliers}}.  
+#'               `FALSE` or `NULL` means no update. `TRUE` or `"ssb"` means update.         
 #' @param ... Further `x13` parameters (currently only parameter `userdefined` is additional parameter to `x13`).
-#' @param pickmdl_method \code{\link{crit_selection}} parameter
+#' @param pickmdl_method \code{\link{crit_selection}} parameter 
+#'         or one of the two extra possibilities, `"first_automdl"` or `"first_tryautomdl"`.
+#'         In both cases the `crit_selection` parameter is `"first"` and the automdl model is added as the last pickmdl model.
+#' * **`"first_automdl"`:** The automdl model is chosen whenever no pickmdl model is ok.    
+#'                          In other words, the `star` parameter changes.  
+#' * **`"first_tryautomdl"`:** When no pickmdl model is ok:  The automdl model is chosen if this model is ok, 
+#'                          otherwise the `star` model is chosen.  
 #' @param star           \code{\link{crit_selection}} parameter
 #' @param when_star      \code{\link{crit_selection}} parameter
+#' @param when_automdl Function to be called when automdl since no pickmdl model ok. Supply NULL to do nothing.
+#' @param when_finalnotok Function to be called, e.g. \code{\link{warning}}, when final run with final model is not ok. Supply NULL to do nothing.
+#'                        See \code{\link{crit_ok}}. 
 #' @param identification_end To shorten the series before runs used to identify (arima) parameters.
 #'            That is, the series is shortened by `window(series,` `end = identification_end)`.
 #' @param identification_estimate.to   To set \code{\link{x13_spec}} parameter `estimate.to` before runs used to identify (arima) parameters.  
@@ -19,10 +30,18 @@
 #' @param identify_t_filter When `TRUE`, Henderson trend filter is identified by the shortened (see above) series.
 #' @param identify_s_filter When `TRUE`, Seasonal moving average filter is identified by the shortened series.
 #' @param identify_outliers When `TRUE`, Outliers are identified by the shortened series.
+#' @param identify_arima_mu When `TRUE`, `arima.mu` is identified by the shortened series (see \code{\link{arima_mu}}).
 #' @param automdl.enabled When `TRUE`, automdl is performed instead of pickmdl. 
 #'            If `spec` is a list of several objects as outputted from `x13_spec_pickmdl`, only first object is used.
+#' @param fastfirst When `TRUE` and when pickmdl with `crit_selection` parameter `"first"`, 
+#'                  only as many models as needed are run.
+#'                  This affects the output when `output = "all"`. 
 #' @param verbose Printing information to console when `TRUE`. 
-#' @param output One of `"sa"` (default), `"spec"` (final spec), `"sa_spec"` (both) and `"all"`. See examples.        
+#' @param output One of `"sa"` (default), `"spec"` (final spec), `"sa_spec"` (both) and `"all"`. See examples.   
+#' @param add_comment When `TRUE`, a  comment attribute 
+#'      (character vector with `ok`, `ok_final` and `mdl_nr`) will 
+#'      be added to the \code{\link{x13}} output object. Use \code{\link{comment}} 
+#'      to get the attribute or \code{\link{ok}} to get the attribute converted to a list.     
 #'
 #' @return By default an `x13` output object, or otherwise a list as specified by parameter `output`.
 #' @export
@@ -34,6 +53,9 @@
 #' spec_a  <- x13_spec(spec = "RSA3", transform.function = "Log")
 #' 
 #' a <- x13_pickmdl(myseries, spec_a, verbose = TRUE)
+#' comment(a)
+#' ok(a)
+#' unlist(ok(a))
 #' a$regarima
 #' 
 #' a2 <- x13_pickmdl(myseries, spec_a, identification_end = c(2014, 2))
@@ -96,41 +118,117 @@
 #' # Warning avoided (when_star) and 2nd (star) model selected 
 #' d2 <- x13_pickmdl(myseries, spec_d, star = 2, when_star = NULL, verbose = TRUE)
 #' 
+#' # automdl since no pickmdl model ok, but still not ok 
+#' d3 <- x13_pickmdl(myseries, spec_d, pickmdl_method = "first_automdl", verbose = TRUE)
+#' 
+#' # airline model (star) since automdl also not ok 
+#' d4 <- x13_pickmdl(myseries, spec_d, pickmdl_method = "first_tryautomdl", verbose = TRUE,
+#'                   when_finalnotok = warning) # also finalnotok warning
 #' 
 #' # As a2, with output = "all"
-#' k <- x13_pickmdl(myseries, spec_b, identification_end = c(2010, 2), output = "all")
+#' k <- x13_pickmdl(myseries, spec_b, identification_end = c(2010, 2), output = "all",
+#'                  fastfirst = FALSE) # With TRUE only one model in this case 
 #' k$sa$decomposition  # As a2$decomposition 
 #' k$mdl_nr            # index of selected model used to identify parameters
 #' k$sa_mult[[k$mdl_nr]]$decomposition  # decomposition for model to identify
 #' k$crit_tab          # Table of criteria 
 #' 
 #' 
-#' # Effect of identify_outliers
-#' q1 <- x13_pickmdl(myseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
-#'                   identification_end = c(2010, 2))
-#' q2 <- x13_pickmdl(myseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
+#' # Effect of identify_outliers (TRUE is default)
+#' m1 <- x13_pickmdl(myseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
+#'                   identification_end = c(2010, 2), identify_outliers = FALSE)
+#' m2 <- x13_pickmdl(myseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
 #'                   identification_end = c(2010, 2), identify_outliers = TRUE, 
 #'                   verbose = TRUE, output = "all")
-#' q3 <- x13_pickmdl(myseries, q2$spec, identification_end = c(2018, 2), identify_outliers = TRUE, 
+#' m3 <- x13_pickmdl(myseries, m2$spec, identification_end = c(2018, 2), identify_outliers = TRUE, 
+#'                   verbose = TRUE)
+#' 
+#' m1$regarima
+#' m2$sa$regarima
+#' m3$regarima
+#' 
+#' 
+#' # With corona outliers (even possible when series is not long enough) 
+#' m4 <- x13_pickmdl(myseries, spec_a, verbose = TRUE, corona = TRUE)
+#' m4$regarima
+#' m5 <- x13_pickmdl(myseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
+#'                   identification_end = c(2010, 2), identify_outliers = TRUE, 
+#'                   verbose = TRUE, corona = TRUE) 
+#' m5$regarima 
+#' 
+#'  
+#' ###########  quarterly series  #############
+#'    
+#' qseries <- pickmdl_data("qseries")    
+#' 
+#' # Effect of identify_outliers (TRUE is default)
+#' q1 <- x13_pickmdl(qseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
+#'                   identification_end = c(2010, 2), identify_outliers = FALSE)
+#' q2 <- x13_pickmdl(qseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
+#'                   identification_end = c(2010, 2), identify_outliers = TRUE, 
+#'                   verbose = TRUE, output = "all")
+#' q3 <- x13_pickmdl(qseries, q2$spec, identification_end = c(2018, 2), identify_outliers = TRUE, 
 #'                   verbose = TRUE)
 #' 
 #' q1$regarima
 #' q2$sa$regarima
 #' q3$regarima
-x13_pickmdl <- function(series, spec, ..., 
-                        pickmdl_method = "first", star = 1, when_star = warning,
+#' 
+#' 
+#' # With corona outliers (even possible when series is not long enough) 
+#' q4 <- x13_pickmdl(qseries, spec_a, verbose = TRUE, corona = TRUE)
+#' q4$regarima
+#' q5 <- x13_pickmdl(qseries, x13_spec("RSA3", outlier.usedefcv = FALSE, outlier.cv = 3), 
+#'                   identification_end = c(2010, 2), identify_outliers = TRUE, 
+#'                   verbose = TRUE, corona = TRUE) 
+#' q5$regarima 
+#' 
+#' 
+#' # Demonstrate strange behavior of x13 with TC at end. Updating outlier.from matters.
+#' # Explains why TC (III-2021) is in q4 and not in q5 
+#' q11 <- x13(window(qseries, end = c(2020, 1)), 
+#'     spec = x13_spec(spec = "RSA3", transform.function = "Log", 
+#'     usrdef.outliersEnabled = TRUE, usrdef.outliersType = "TC", 
+#'     usrdef.outliersDate = "2020-01-01"))  
+#' q12 <- x13(window(qseries, end = c(2020, 1)), # same with outlier.from 
+#'     spec = x13_spec(spec = "RSA3", transform.function = "Log", 
+#'     usrdef.outliersEnabled = TRUE, usrdef.outliersType = "TC", 
+#'     usrdef.outliersDate = "2020-01-01", outlier.from = "2020-04-01")) 
+#' q11$regarima 
+#' q12$regarima
+#' 
+#' 
+x13_pickmdl <- function(series, spec, 
+                        corona = FALSE, ..., 
+                        pickmdl_method = "first", star = 1, 
+                        when_star = warning,
+                        when_automdl = message,
+                        when_finalnotok = NULL,
                         identification_end = NULL, identification_estimate.to = NULL, 
                         identify_t_filter = FALSE, identify_s_filter = FALSE, 
-                        identify_outliers = FALSE,
+                        identify_outliers = TRUE,
+                        identify_arima_mu = TRUE,
                         automdl.enabled = FALSE,
+                        fastfirst = TRUE,
                         verbose = FALSE,
-                        output = "sa") {
+                        output = "sa",
+                        add_comment = TRUE) {
   
+  
+  if (is.logical(corona)) {
+    if (corona) {
+      corona <- "ssb"
+    } else {
+      corona <- NULL
+    }
+  }
   
   if(!(output %in% c("sa", "spec", "sa_spec", "all")))
     stop('Allowed values of parameter output are "sa", "spec", "sa_spec" and "all".')
   
   automdl.enabled <- isTRUE(automdl.enabled)
+  
+  auto_in_pickmdl <- FALSE
   
   if (!all(apply(sapply(spec, class), 1, unique) == c("SA_spec", "X13"))) {
     if (!all(class(spec) == c("SA_spec", "X13"))) {
@@ -139,7 +237,34 @@ x13_pickmdl <- function(series, spec, ...,
     if (automdl.enabled) {
       spec <- list(spec)
     } else {
-      spec <- x13_spec_pickmdl(spec)
+      if(pickmdl_method %in% c("first_automdl", "first_tryautomdl")){
+        spec <- c(x13_spec_pickmdl(spec), list(spec))
+        spec[[length(spec)]] <- x13_spec(spec[[length(spec)]], automdl.enabled = TRUE)
+        if(pickmdl_method=="first_automdl"){
+          star <- length(spec)
+        }
+        auto_in_pickmdl <- TRUE
+        pickmdl_method <- "first"
+      } else {
+        spec <- x13_spec_pickmdl(spec)
+      }
+    }
+  }
+  
+  if (!is.null(corona)) {  # Because of possible error (bug) only include outliers within estimation span 
+    end_ts <- end(ts(1:2, start = end(window(series, end = identification_end)), frequency = frequency(series)))
+    end_ts_final <- end(ts(1:2, start = end(series), frequency = frequency(series)))
+    if (frequency(series) == 4) {
+      end_ts[2] <- 1 + (end_ts[2] - 1) * 3
+      end_ts_final[2] <- 1 + (end_ts_final[2] - 1) * 3
+    }
+    outlier_date_limit <- paste(end_ts[1], Number(end_ts[2], 2), "01", sep = "-")
+    outlier_date_limit_final <- paste(end_ts_final[1], Number(end_ts_final[2], 2), "01", sep = "-")
+    if (!is.null(identification_estimate.to)) {
+      outlier_date_limit <- identification_estimate.to
+    }
+    for (i in seq_along(spec)) {
+      spec[[i]] <- update_spec_corona_outliers(spec[[i]], option = corona, outlier_date_limit = outlier_date_limit, freq = frequency(series))
     }
   }
   
@@ -148,38 +273,96 @@ x13_pickmdl <- function(series, spec, ...,
     spec[[1]] <- x13_spec(spec[[1]], automdl.enabled = TRUE)
   }
   
-  if (is.null(identification_estimate.to)) {
-    sa_mult <- x13_multi(series = window(series, end = identification_end), spec = spec, ...)
-  } else {
-    sa_mult <- x13_multi(series = window(series, end = identification_end), 
-                         spec = lapply(spec, x13_spec, estimate.to = identification_estimate.to), ...)
+  if (fastfirst) {
+    fastfirst <- !automdl.enabled & pickmdl_method == "first"
   }
   
-  if (automdl.enabled) {
-    arma <- sa_mult[[1]]$regarima$arma  # as.numeric remove names, as.numeric needed? can be factors?  
-    spec[[1]] <- x13_spec(spec[[1]], 
-                          arima.p = as.numeric(arma["p"]), 
-                          arima.d = as.numeric(arma["d"]), 
-                          arima.q = as.numeric(arma["q"]), 
-                          arima.bp = as.numeric(arma["bp"]), 
-                          arima.bd = as.numeric(arma["bd"]), 
-                          arima.bq = as.numeric(arma["bq"]),
-                          automdl.enabled = FALSE)
+  if (fastfirst) {
+    sa_mult <- NULL
     crit_tab <- NULL
-    mdl_nr <- 1
+    ok_loop <- FALSE
+    ok <- TRUE
+    i <- 0
+    when_star_here <- NULL
+    while (!ok_loop) {
+      i <- i + 1
+      # almost same code as below (spec -> spec[i])
+      if (is.null(identification_estimate.to)) {
+        sa_mult <- c(sa_mult, x13_multi(series = window(series, end = identification_end), spec = spec[i], ...))
+      } else {
+        sa_mult <- c(sa_mult, x13_multi(series = window(series, end = identification_end), 
+                                        spec = lapply(spec[i], x13_spec, estimate.to = identification_estimate.to), ...))
+      }
+      crit_tab_i <- crit_table(sa_mult[i])
+      if (i == length(spec)) {
+        when_star_here <- when_star
+      }
+      ok_loop <- as.logical(crit_selection(crit_tab_i, star = 0, when_star = when_star_here))
+      crit_tab <- rbind(crit_tab, crit_tab_i)
+      if (ok_loop) {
+        mdl_nr <- i
+      }
+      if (!ok_loop & i == length(spec)) {
+        mdl_nr <- star
+        ok_loop <- TRUE
+        ok <- FALSE
+      }
+    }
   } else {
-    crit_tab <- crit_table(sa_mult)
+    if (is.null(identification_estimate.to)) {
+      sa_mult <- x13_multi(series = window(series, end = identification_end), spec = spec, ...)
+    } else {
+      sa_mult <- x13_multi(series = window(series, end = identification_end), 
+                           spec = lapply(spec, x13_spec, estimate.to = identification_estimate.to), ...)
+    }
     
-    mdl_nr <- crit_selection(crit_tab, pickmdl_method = pickmdl_method, star = star, when_star = when_star)
+    if (automdl.enabled) {
+      crit_tab <- NULL
+      mdl_nr <- 1L
+      ok <- crit_ok(sa_mult[[mdl_nr]])
+    } else {
+      crit_tab <- crit_table(sa_mult)
+      mdl_nr <- crit_selection(crit_tab, pickmdl_method = pickmdl_method, star = star, when_star = when_star)
+      if (!mdl_nr) {
+        mdl_nr <- star
+        ok <- FALSE
+      } else {
+        ok <- TRUE
+      }
+    }
   }
+  
+  
+  
+  
   
   if(verbose){
     print(sa_mult[[mdl_nr]]$regarima$arma)
   }
   
-  spec <- spec[[mdl_nr]] 
+  length_spec <- length(spec)
+  spec <- spec[[mdl_nr]]
   
-
+  if(automdl.enabled | (auto_in_pickmdl & mdl_nr == length_spec)){
+    if(!automdl.enabled){
+      if(!is.null(when_automdl)){
+        when_automdl("automdl since no pickmdl model ok")
+      }
+    }
+    arma <- sa_mult[[mdl_nr]]$regarima$arma  # as.numeric remove names, as.numeric needed? can be factors?  
+    spec <- x13_spec(spec, 
+                     arima.p = as.numeric(arma["p"]), 
+                     arima.d = as.numeric(arma["d"]), 
+                     arima.q = as.numeric(arma["q"]), 
+                     arima.bp = as.numeric(arma["bp"]), 
+                     arima.bd = as.numeric(arma["bd"]), 
+                     arima.bq = as.numeric(arma["bq"]),
+                     automdl.enabled = FALSE)
+  }
+  
+  if (identify_arima_mu) {
+    spec <- x13_spec(spec, arima.mu = arima_mu(sa_mult[[mdl_nr]]))
+  }
   
   if (identify_t_filter | identify_s_filter) {
     filters <- filter_input(sa_mult[[mdl_nr]])
@@ -194,8 +377,13 @@ x13_pickmdl <- function(series, spec, ...,
     }
   }
   
+  
+  if (!is.null(corona)) { # Because of new final limit possible extra outliers included  
+    spec <- update_spec_corona_outliers(spec, option = corona, outlier_date_limit = outlier_date_limit_final, freq = frequency(series))
+  }
+  
   if (identify_outliers) {
-      spec <- update_spec_outliers(spec, sa_mult[[mdl_nr]], verbose = verbose)
+      spec <- update_spec_outliers(sa = sa_mult[[mdl_nr]], spec = spec, verbose = verbose)
   }
   
   if(output == "spec"){
@@ -204,6 +392,28 @@ x13_pickmdl <- function(series, spec, ...,
   
   sa <- x13(series = series, spec = spec, ...)
   
+  # Include possibility to check differences.
+  # Seen that !isTRUE(all_equal) happen as result of specified outlier at end of series.
+  # End outlier not included in first model, but included after outlier.from updated. 
+  if (is.null(identification_end) & is.null(identification_estimate.to)) {
+    if (get0("check_all.equal", ifnotfound = FALSE)) {
+      all_equal <- all.equal(sa$final$series, sa_mult[[mdl_nr]]$final$series)
+      if (isTRUE(all_equal))
+        message(all_equal) else warning(all_equal)
+    }
+  }
+  
+  ok_final <- crit_ok(sa)
+  
+  if (!is.null(when_finalnotok)) {
+    if (!ok_final) {
+      when_finalnotok("FINAL RUN NOT OK")
+    }
+  }
+  
+  if (add_comment) {
+    comment(sa) <- c(ok = as.character(ok), ok_final = as.character(ok_final), mdl_nr = as.character(mdl_nr))
+  }
   
   if(output == "sa_spec"){
     return(list(sa = sa, spec = spec))
