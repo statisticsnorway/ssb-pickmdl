@@ -41,3 +41,8 @@ test_that("x13_pickmdl works ok", {
   expect_equal(d1$crit_tab, d1b$crit_tab[1:2, ])
   
 })
+
+test_that("x13_both ok", {
+  fnames <- names(formals(x13_pickmdl))[!(names(formals(x13_pickmdl)) %in% c("spec", "..."))]
+  expect_equal(formals(x13_pickmdl)[fnames], formals(x13_both)[fnames])
+})
