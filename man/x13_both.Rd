@@ -8,18 +8,24 @@ x13_both(
   series,
   ...,
   userdefined = NULL,
+  both_output = "main",
+  corona = FALSE,
   pickmdl_method = "first",
   star = 1,
   when_star = warning,
+  when_automdl = message,
+  when_finalnotok = NULL,
   identification_end = NULL,
   identification_estimate.to = NULL,
   identify_t_filter = FALSE,
   identify_s_filter = FALSE,
-  identify_outliers = FALSE,
+  identify_outliers = TRUE,
+  identify_arima_mu = TRUE,
   automdl.enabled = FALSE,
+  fastfirst = TRUE,
   verbose = FALSE,
   output = "sa",
-  both_output = "main"
+  add_comment = TRUE
 )
 }
 \arguments{
@@ -28,6 +34,11 @@ x13_both(
 \item{...}{Parameters to \code{\link{x13_spec}}.}
 
 \item{userdefined}{Parameter to \code{\link{x13}}  (via \code{...}  to \code{x13_pickmdl}).}
+
+\item{both_output}{One of \code{"main"} (default, x13_pickmdl output), \code{"spec"} (spec output) or \code{"both"}.}
+
+\item{corona}{Whether to update \code{spec} by outliers according to \code{\link{corona_outliers}}.
+\code{FALSE} or \code{NULL} means no update. \code{TRUE} or \code{"ssb"} means update.}
 
 \item{pickmdl_method}{\code{\link{crit_selection}} parameter
 or one of the two extra possibilities, \code{"first_automdl"} or \code{"first_tryautomdl"}.
@@ -43,6 +54,11 @@ otherwise the \code{star} model is chosen.
 
 \item{when_star}{\code{\link{crit_selection}} parameter}
 
+\item{when_automdl}{Function to be called when automdl since no pickmdl model ok. Supply NULL to do nothing.}
+
+\item{when_finalnotok}{Function to be called, e.g. \code{\link{warning}}, when final run with final model is not ok. Supply NULL to do nothing.
+See \code{\link{crit_ok}}.}
+
 \item{identification_end}{To shorten the series before runs used to identify (arima) parameters.
 That is, the series is shortened by \verb{window(series,} \verb{end = identification_end)}.}
 
@@ -55,14 +71,23 @@ This is an alternative to  \code{identification_end}.}
 
 \item{identify_outliers}{When \code{TRUE}, Outliers are identified by the shortened series.}
 
+\item{identify_arima_mu}{When \code{TRUE}, \code{arima.mu} is identified by the shortened series (see \code{\link{arima_mu}}).}
+
 \item{automdl.enabled}{When \code{TRUE}, automdl is performed instead of pickmdl.
 If \code{spec} is a list of several objects as outputted from \code{x13_spec_pickmdl}, only first object is used.}
+
+\item{fastfirst}{When \code{TRUE} and when pickmdl with \code{crit_selection} parameter \code{"first"},
+only as many models as needed are run.
+This affects the output when \code{output = "all"}.}
 
 \item{verbose}{Printing information to console when \code{TRUE}.}
 
 \item{output}{One of \code{"sa"} (default), \code{"spec"} (final spec), \code{"sa_spec"} (both) and \code{"all"}. See examples.}
 
-\item{both_output}{One of \code{"main"} (default, x13_pickmdl output), \code{"spec"} (spec output) or \code{"both"}.}
+\item{add_comment}{When \code{TRUE}, a  comment attribute
+(character vector with \code{ok}, \code{ok_final} and \code{mdl_nr}) will
+be added to the \code{\link{x13}} output object. Use \code{\link{comment}}
+to get the attribute or \code{\link{ok}} to get the attribute converted to a list.}
 }
 \value{
 By default an \code{x13} output object, or otherwise a list as specified by parameter \code{output} and \code{both_output}.
