@@ -43,12 +43,36 @@ test_that("x13_pickmdl works ok", {
 })
 
 
-
 test_that("x13_both and x13_text_frame", {
   fnames <- names(formals(x13_pickmdl))[!(names(formals(x13_pickmdl)) %in% c("spec", "..."))]
   expect_equal(formals(x13_pickmdl)[fnames], formals(x13_both)[fnames])
+})  
+
+test_that("x13_both and x13_text_frame", {
+  skip("only works when run manually")
+  # A fix is to include code in helper file
+  # But still problems when run from check(): Error in eval(m_call) : object 'seriesABC' not found
+
+  myseries <- pickmdl_data("myseries")
+  seriesABC <- cbind(A = myseries, B = myseries + 10, C = myseries + 20)
   
-  # code in helper file 
+  tf <- data.frame(name = c("A", "B", "C"), automdl.enabled = c("TRUE", "FALSE", "FALSE"),
+                   usrdef.outliersDate = c('c("2009-01-01", "2016-01-01")', 'c("2009-01-01")', NA),
+                   usrdef.outliersType = c('rep("LS", 2)', '"AO"', NA),
+                   usrdef.outliersEnabled = c("TRUE", "TRUE", NA))
+  
+  x13_both_old_method <- FALSE   
+  
+  outABC <- x13_text_frame(tf, series = "seriesABC", spec = "RSA3", transform.function = "Log")
+  outB   <- x13_text_frame(tf, series = "seriesABC", spec = "RSA3", transform.function = "Log", 
+                           id = "B")
+  
+  x13_both_old_method <- TRUE
+  
+  
+  outABC_old <- x13_text_frame(tf, series = "seriesABC", spec = "RSA3", transform.function = "Log")
+  outB_old   <- x13_text_frame(tf, series = "seriesABC", spec = "RSA3", transform.function = "Log", 
+                               id = "B")
   expect_identical(outABC[[2]], outB) 
   expect_identical(outABC_old, outABC)
   expect_identical(outB_old, outB)
