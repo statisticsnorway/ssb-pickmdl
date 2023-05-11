@@ -41,6 +41,18 @@ x13_both <- function(series, ..., userdefined = NULL, both_output = "main",
     return(spec)
   }
   
+  # The function definition of x13_both is, for most parameters, made to be 
+  # identical to  x13_pickmdl (same parameters and default values). 
+  # This is also tested in the package test.  
+  # Below: 
+  #   old method is more understandable
+  #   new method is safer in terms of updates of x13_pickmdl
+  
+  # Trick to run old_method for testing: 
+  x13_both_old_method <- get0("x13_both_old_method", ifnotfound = FALSE)
+  
+  if(x13_both_old_method){
+    message("x13_both_old_method = TRUE")
   main  <- x13_pickmdl(series = series, spec = spec, userdefined = userdefined, 
                        corona = corona, 
                        pickmdl_method = pickmdl_method, star = star, when_star = when_star,
@@ -51,8 +63,15 @@ x13_both <- function(series, ..., userdefined = NULL, both_output = "main",
                        automdl.enabled = automdl.enabled,
                        fastfirst = fastfirst, verbose = verbose, 
                        output = output,  add_comment =  add_comment)
-  
-  
+  } else {
+    dot_names <- names(list(...))
+    m_call <- match.call()
+    m_call <- m_call[!(names(m_call) %in% c(dot_names, "both_output"))]
+    m_call[["spec"]] <- spec
+    m_call[[1]] <- x13_pickmdl
+    main <- eval(m_call)
+  }
+                              
   if(both_output == "both"){
     return(list(main = main, spec = spec))
   }
