@@ -42,7 +42,20 @@ test_that("x13_pickmdl works ok", {
   
 })
 
-test_that("x13_both ok", {
+
+
+test_that("x13_both and x13_text_frame", {
   fnames <- names(formals(x13_pickmdl))[!(names(formals(x13_pickmdl)) %in% c("spec", "..."))]
   expect_equal(formals(x13_pickmdl)[fnames], formals(x13_both)[fnames])
+  
+  # code in helper file 
+  expect_identical(outABC[[2]], outB) 
+  expect_identical(outABC_old, outABC)
+  expect_identical(outB_old, outB)
+  
 })
+
+
+
+
+
