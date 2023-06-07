@@ -5,12 +5,13 @@ Version: 0.4.0
 Date: 2023-05-11
 Authors@R: c(person("Øyvind", "Langsrud", role = c("aut", "cre"), email = "oyl@ssb.no"),
              person("Dinh Quang", "Pham", role = c("aut")),
-             person("Ane", "Seierstad", role = c("aut")))
+             person("Ane", "Seierstad", role = c("aut")),
+             person("Statistics Norway", role = "cph"))
 Author: Øyvind Langsrud [aut, cre], Dinh Quang Pham [aut], Ane Seierstad [aut] 
 Maintainer: Øyvind Langsrud <oyl@ssb.no>
 Depends: RJDemetra
 Description: PICKMDL for RJDemetra. 
-License: Apache License 2.0 | file LICENSE
+License: MIT + file LICENSE
 Roxygen: list(markdown = TRUE)
 Encoding: UTF-8
 RoxygenNote: 7.2.3
