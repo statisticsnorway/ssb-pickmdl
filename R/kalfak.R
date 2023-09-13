@@ -23,6 +23,8 @@
 #' 
 #' @param rod_dag inneholder de faste hellig- og hoeytidsdagene (roede) 
 #' som skal korrigeres, evt. andre dager (for eksempel des24 og des31). 
+#' Kristihimmelfartsdag blir automatisk behandlet som en ekstra soendag i programmet 
+#' naar TD-/WD-variable konstrueres
 #'
 #' @param k_fpk TRUE eller FALSE. Hvis det blir TRUE, vil variable for en periode 
 #' foer skjaertorsdag bli konstruert. Default verdien er TRUE. Dersom parameteren 
@@ -83,6 +85,9 @@
 #' bli trukket fra trading day regressorer av. Default verdien er TRUE. Hvis TRUE
 #' fjernes sesongeffektene i TD variable basert paa perioden angitt (i forste_ar og siste_ar).
 #' 
+#' @param skudd_ar TRUE eller FALSE. Hvis det settes til TRUE vil programmet lage en variabel "skudd_ar" for skuddaar. 
+#' Default verdien er TRUE, 
+#'
 #' @return  korrigerte faktorer
 #' @importFrom stats aggregate ar
 #' @export
@@ -97,13 +102,13 @@
 #'   paske_egen = 1, paske_mdl = "X12", t_pklordag = "egen_effekt",
 #'   t_pinse = "sondag", k_td = TRUE, td_type = "TD6", 
 #'   k_grupper = TRUE, monster = c(1, 1, 2, 2, 2, 3), 
-#'   fjerne_se_td = TRUE)
+#'   fjerne_se_td = TRUE, skudd_ar = TRUE)
 #'
 konstruksjon <- function(forste_ar, siste_ar, k_roddag = TRUE,  
     t_roddag = "sondag", rod_dag = c("jan1", "mai1", "mai17", "des25", "des26"), 
     k_fpk = TRUE, ant_fpk = 3, t_fpk = "egen_effekt", paske_egen = 1, 
-    paske_mdl = "X12", t_pklordag = "egen_effekt", t_pinse = "sondag", k_td = FALSE, 
-    td_type = "TD6", k_grupper = FALSE, monster = c(1, 2, 3, 4, 5, 6), fjerne_se_td = TRUE) {
+    paske_mdl = "X12", t_pklordag = "sondag", t_pinse = "sondag", k_td = FALSE, 
+    td_type = "TD6", k_grupper = FALSE, monster = c(1, 2, 3, 4, 5, 6), fjerne_se_td = TRUE, skudd_ar = TRUE) {
 
 
 
@@ -671,17 +676,19 @@ if (k_grupper == TRUE) {
 
 
 ## For leap year
-samle_mnd$lpy <- 0 
+if (skudd_ar == TRUE) {
+samle_mnd$skudd_ar <- 0 
 j <- 0
 for (i in forste_ar:siste_ar) {
      j <- j + 1 
     namnh <- lubridate::leap_year(i) 
     if (namnh == TRUE) {
-        samle_mnd$lpy[(j - 1) * 12 +2] <- 0.75
+        samle_mnd$skudd_ar[(j - 1) * 12 +2] <- 0.75
     } else {
-           samle_mnd$lpy[(j - 1) * 12 +2] <- - 0.25
+           samle_mnd$skudd_ar[(j - 1) * 12 +2] <- - 0.25
     }
 } ## for (i in forste_ar
+} ## End if (skudd_ar == TRUE)
 
 
 

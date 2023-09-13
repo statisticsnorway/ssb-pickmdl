@@ -15,13 +15,14 @@ konstruksjon(
   t_fpk = "egen_effekt",
   paske_egen = 1,
   paske_mdl = "X12",
-  t_pklordag = "egen_effekt",
+  t_pklordag = "sondag",
   t_pinse = "sondag",
   k_td = FALSE,
   td_type = "TD6",
   k_grupper = FALSE,
   monster = c(1, 2, 3, 4, 5, 6),
-  fjerne_se_td = TRUE
+  fjerne_se_td = TRUE,
+  skudd_ar = TRUE
 )
 }
 \arguments{
@@ -47,7 +48,9 @@ ellers vil de bli betraktet som ekstra soendager i TD/WD variable.
 Default verdien er 'sondag'.}
 
 \item{rod_dag}{inneholder de faste hellig- og hoeytidsdagene (roede)
-som skal korrigeres, evt. andre dager (for eksempel des24 og des31).}
+som skal korrigeres, evt. andre dager (for eksempel des24 og des31).
+Kristihimmelfartsdag blir automatisk behandlet som en ekstra soendag i programmet
+naar TD-/WD-variable konstrueres}
 
 \item{k_fpk}{TRUE eller FALSE. Hvis det blir TRUE, vil variable for en periode
 foer skjaertorsdag bli konstruert. Default verdien er TRUE. Dersom parameteren
@@ -107,6 +110,9 @@ en annen gruppe, mens fredag er en 3. gruppe. Da er loerdag og soendag kontrast 
 \item{fjerne_se_td}{TRUE eller FALSE. Hvis det blir TRUE, vil sesong av kalendereffekter
 bli trukket fra trading day regressorer av. Default verdien er TRUE. Hvis TRUE
 fjernes sesongeffektene i TD variable basert paa perioden angitt (i forste_ar og siste_ar).}
+
+\item{skudd_ar}{TRUE eller FALSE. Hvis det settes til TRUE vil programmet lage en variabel "skudd_ar" for skuddaar.
+Default verdien er TRUE,}
 }
 \value{
 korrigerte faktorer
@@ -125,6 +131,6 @@ konstruksjon(forste_ar = 2000, siste_ar = 2050,
   paske_egen = 1, paske_mdl = "X12", t_pklordag = "egen_effekt",
   t_pinse = "sondag", k_td = TRUE, td_type = "TD6", 
   k_grupper = TRUE, monster = c(1, 1, 2, 2, 2, 3), 
-  fjerne_se_td = TRUE)
+  fjerne_se_td = TRUE, skudd_ar = TRUE)
 
 }
