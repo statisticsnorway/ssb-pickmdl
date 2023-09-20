@@ -92,7 +92,7 @@
 #' @importFrom stats aggregate ar
 #' @export
 #' 
-#' @note This function is copied from an internal package (kalfak) at SSB maintained by Dinh Pham. 
+#' @note This function is copied from an internal package (kalfak) at SSB maintained by Dinh Pham. It is about constructing user-defined calendar regressors. 
 #' 
 #' @examples 
 #' konstruksjon(forste_ar = 2000, siste_ar = 2050, 
