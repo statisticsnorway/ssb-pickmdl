@@ -8,3 +8,7 @@ SECURITY.md
 eksempelkode.R
 pickmdl_source.R
 generate_pickmdl_source.R
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.github$

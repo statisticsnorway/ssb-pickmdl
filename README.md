@@ -5,3 +5,6 @@
   - See https://github.com/jdemetra/jdemetra-app/issues/504
 * The package has also possibilities for partial concurrent adjustment. 
   - The ARIMA model, outliers and filters can be identified at a certain date and then held fixed (with a new outlier-span).
+  
+  
+More detailed documentation can be found at the [reference site for pickmdl](https://statisticsnorway.github.io/ssb-pickmdl/reference/index.html)
