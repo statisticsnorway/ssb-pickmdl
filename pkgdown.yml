@@ -1,9 +1,8 @@
 pandoc: 3.1.11
-pkgdown: 2.0.9
+pkgdown: 2.1.1
 pkgdown_sha: ~
 articles: {}
-last_built: 2024-06-24T08:21Z
+last_built: 2024-09-18T13:11Z
 urls:
   reference: https://statisticsnorway.github.io/ssb-pickmdl/reference
   article: https://statisticsnorway.github.io/ssb-pickmdl/articles
-
