@@ -57,7 +57,7 @@ crit1 <- function(sa){
 #' @export
 crit2 <- function(sa){
   hj1 <- sa$regarima$residuals.stat$tests$P.value
-  hj1[5] 
+  hj1[4] 
 }
 
 
