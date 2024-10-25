@@ -13,9 +13,11 @@
 #' 
 #' \strong{kalendernr3:} As `read.table("kalendernr3.txt")`
 #' 
+#' \strong{myseries_old:} Old version of `myseries`, directly from `datainn`.  
+#' 
 #' @export
 #' @importFrom utils data
-#' @importFrom stats ts ts.union
+#' @importFrom stats ts ts.union rnorm runif
 #'
 #' @examples
 #' pickmdl_data("myseries")
@@ -29,7 +31,12 @@ pickmdl_data <- function(dataset){
   sistear  <- 2021
   sistemn  <- 9
   
-  if(dataset == "myseries"){
+  if (dataset == "myseries") {
+    myseries_old <- pickmdl_data("myseries_old")
+    return(myseries_old + round(4 * rnorm_seed(length(myseries_old)), 1))
+  }
+  
+  if(dataset == "myseries_old"){
     datainn <- pickmdl_data("datainn")
     myseries <- ts(datainn, start = c(forstear, 1), frequency = 12)
     return(myseries)
@@ -151,3 +158,20 @@ pickmdl_data <- function(dataset){
                      class = "data.frame", row.names = c(NA, -216L)))
   stop(paste("No data with dataset =", dataset))
 }
+
+
+# rnorm with fixed seed without affecting users random value stream
+# Code inside the if-block is similar to other SSB packages 
+rnorm_seed <- function(x, fun = rnorm, rndseed = 123, ...){
+  if (!is.null(rndseed)) {
+    if (!exists(".Random.seed")) 
+      if (runif(1) < 0) 
+        stop("Now seed exists")
+    exitSeed <- .Random.seed
+    on.exit(.Random.seed <<- exitSeed)
+    set.seed(rndseed)
+  }
+  fun(x, ...)
+}
+
+

@@ -23,6 +23,8 @@ Function that returns an r object with data
 \strong{datainn:} A vector of data.
 
 \strong{kalendernr3:} As \code{read.table("kalendernr3.txt")}
+
+\strong{myseries_old:} Old version of \code{myseries}, directly from \code{datainn}.
 }
 \examples{
 pickmdl_data("myseries")
