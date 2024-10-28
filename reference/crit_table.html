@@ -9,7 +9,7 @@ The other functions are underlying functions that take a single x13 output objec
 
     <a class="navbar-brand me-2" href="../index.html">pickmdl</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -79,25 +79,25 @@ The other functions are underlying functions that take a single <code>x13</code>
 <span class="r-in"><span><span class="va">sa5</span> <span class="op">&lt;-</span> <span class="fu"><a href="x13_multi.html">x13_multi</a></span><span class="op">(</span><span class="va">myseries</span>, spec <span class="op">=</span> <span class="va">spec5</span><span class="op">)</span>   </span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">crit_table</span><span class="op">(</span><span class="va">sa5</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           crit1      crit2      crit3    m_aic</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 0.04432100 0.03914802 -0.8365831 1248.975</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 0.03697842 0.11701685 -0.7158467 1207.235</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3,] 0.04003758 0.65585839  0.0000000 1192.545</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [4,] 0.04316176 0.27888160 -0.9697126 1247.015</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [5,] 0.03711805 0.48234261 -0.3487343 1186.795</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           crit1        crit2      crit3    m_aic</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 0.05061032 8.013558e-06 -0.8434347 1284.972</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 0.04851922 1.270095e-02 -0.7772412 1264.598</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,] 0.05733725 1.318505e-01  0.0000000 1259.908</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4,] 0.04751402 2.940419e-05 -0.9704624 1288.046</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [5,] 0.05093402 2.889731e-01 -0.5057746 1261.431</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">crit123_m_aic</span><span class="op">(</span><span class="va">sa5</span><span class="op">[[</span><span class="fl">4</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         crit1         crit2         crit3         m_aic </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    0.04316176    0.27888160   -0.96971259 1247.01527314 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4.751402e-02  2.940419e-05 -9.704624e-01  1.288046e+03 </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">crit1</span><span class="op">(</span><span class="va">sa5</span><span class="op">[[</span><span class="fl">4</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.04316176</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.04751402</span>
 <span class="r-in"><span><span class="fu">crit2</span><span class="op">(</span><span class="va">sa5</span><span class="op">[[</span><span class="fl">4</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.2788816</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2.940419e-05</span>
 <span class="r-in"><span><span class="fu">crit3</span><span class="op">(</span><span class="va">sa5</span><span class="op">[[</span><span class="fl">4</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -0.9697126</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -0.9704624</span>
 <span class="r-in"><span><span class="fu">m_aic</span><span class="op">(</span><span class="va">sa5</span><span class="op">[[</span><span class="fl">4</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> </span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1247.015</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1288.046</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -105,7 +105,7 @@ The other functions are underlying functions that take a single <code>x13</code>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Øyvind Langsrud, Dinh Quang Pham, Ane Seierstad.</p>
+  <p>Developed by Øyvind Langsrud, Dinh Quang Pham, Ane Seierstad, Jens Kristoffer Haug.</p>
 </div>
 
 <div class="pkgdown-footer-right">

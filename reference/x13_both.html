@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pickmdl</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -179,24 +179,24 @@ to get the attribute or <code><a href="ok.html">ok</a></code> to get the attribu
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fu">x13_both</span><span class="op">(</span><span class="fu"><a href="pickmdl_data.html">pickmdl_data</a></span><span class="op">(</span><span class="st">"myseries"</span><span class="op">)</span>, spec <span class="op">=</span> <span class="st">"RSA3"</span>, transform.function <span class="op">=</span> <span class="st">"Log"</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  p  d  q bp bd bq </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  0  1  2  0  1  1 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> outlier.from updated: 2021-10-01  No new outliers.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2  1  0  0  1  1 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outlier.from updated: 2021-10-01  New outliers: 2011-06 </span>
 <span class="r-in"><span><span class="va">a</span><span class="op">$</span><span class="va">decomposition</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Monitoring and Quality Assessment Statistics:</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       M stats</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> M(1)    0.460</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> M(2)    0.494</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> M(1)    0.577</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> M(2)    0.597</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> M(3)    3.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> M(4)    0.869</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> M(4)    0.348</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> M(5)    3.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> M(6)    0.669</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> M(7)    0.206</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> M(8)    0.367</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> M(9)    0.158</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> M(10)   0.355</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> M(11)   0.320</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Q       0.968</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Q-M2    1.026</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> M(6)    0.737</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> M(7)    0.223</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> M(8)    0.364</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> M(9)    0.166</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> M(10)   0.394</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> M(11)   0.368</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Q       0.963</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Q-M2    1.008</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Final filters: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Seasonal filter:  3x5</span>
@@ -209,7 +209,7 @@ to get the attribute or <code><a href="ok.html">ok</a></code> to get the attribu
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Øyvind Langsrud, Dinh Quang Pham, Ane Seierstad.</p>
+  <p>Developed by Øyvind Langsrud, Dinh Quang Pham, Ane Seierstad, Jens Kristoffer Haug.</p>
 </div>
 
 <div class="pkgdown-footer-right">

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pickmdl</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,29 +58,30 @@
 <p><strong>allvar:</strong> Matrix of time series (mts) made from <code>pickmdl_data("kalendernr3")</code></p>
 <p><strong>datainn:</strong> A vector of data.</p>
 <p><strong>kalendernr3:</strong> As <code>read.table("kalendernr3.txt")</code></p>
+<p><strong>myseries_old:</strong> Old version of <code>myseries</code>, directly from <code>datainn</code>.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">pickmdl_data</span><span class="op">(</span><span class="st">"myseries"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        Jan   Feb   Mar   Apr   May   Jun   Jul   Aug   Sep   Oct   Nov   Dec</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2005  80.7  69.1  70.4  79.7  72.9  85.0  43.7  83.2  91.5  81.1  89.2  75.0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2006  88.9  72.7  86.2  69.6  84.3  88.8  46.5  88.7  93.1  91.2  95.5  71.6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2007  96.5  78.9  89.2  77.3  88.1  92.7  54.3  94.4  94.4 100.3 100.3  70.6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2008  99.4  85.8  73.7  95.6  87.9  92.5  58.4  84.1 102.8 100.4  91.3  79.9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2009  87.6  75.1  84.8  75.5  76.9  85.5  53.8  77.5  94.7  86.1  86.1  75.9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2010  79.2  71.3  84.4  77.0  74.1  91.6  49.7  82.2  95.2  82.8  91.1  80.8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2011  85.3  73.1  86.7  72.9  87.4  83.0  46.1  87.9  96.7  89.3  98.2  82.6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2012  96.7  83.6  89.4  79.4  90.5  95.3  55.4  96.3  96.3 103.6 103.6  73.0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2013 103.6  84.8  81.6  99.9  91.4  96.5  63.9  97.2 107.4 112.6 107.5  84.4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2014 108.6  88.8  95.4  93.7 100.8 100.8  67.4  97.1 118.7 115.1 104.7  91.6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2015 104.5  89.6 101.2  95.4  91.8 113.4  68.1  98.0 119.8 110.5 110.5  97.3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2016  98.9  97.7  94.5 105.0  97.9 115.0  65.9 108.4 122.8 113.1 123.9 107.0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2017 113.0  98.6 118.6  86.7 106.6 115.8  66.4 114.9 124.3 124.4 130.9 102.0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2018 118.5 103.4 103.6 109.6 106.9 120.6  74.6 120.0 124.3 134.8 136.7 100.9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2019 124.6 109.3 120.3 106.3 117.2 114.7  83.7 119.3 134.1 139.0 134.4 107.9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2020 124.9 107.3 125.0 102.2 110.8 121.9  80.8 109.5 136.5 130.5 132.1 117.5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2021 115.6 108.8 125.6 108.2 104.0 128.8  73.5 115.6 138.3                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2005  78.5  68.2  76.6  80.0  73.4  91.9  45.5  78.1  88.8  79.3  94.1  76.4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2006  90.5  73.1  84.0  76.7  86.3  80.9  49.3  86.8  88.8  90.3  91.4  68.7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2007  94.0  72.2  92.6  77.9  83.5  97.7  56.0  93.2  98.0 103.8 103.6  73.4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2008 101.6  85.6  72.5  94.1  85.1  91.7  53.3  92.8 107.6  95.9  89.7  78.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2009  90.7  74.8  85.8  75.4  76.7  91.0  52.9  83.6  88.5  88.4  86.6  76.8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2010  80.7  69.3  83.1  72.9  69.8  92.8  51.5  82.4  98.9  91.0  89.1  71.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2011  89.3  70.3  83.9  77.0  86.3  78.1  46.8  87.3  96.7  90.8  96.7  85.2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2012  95.8  84.9  93.8  81.1  89.2  99.9  59.4  98.5  97.3 101.1 109.0  70.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2013 112.3  90.9  80.7  95.8  88.6  97.5  62.9  95.8 103.6 112.4 104.4  77.7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2014 107.1  92.5  93.1  96.1  94.3 100.6  69.5  98.3 119.1 112.5 101.3  87.5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2015 105.0  85.8  99.2  94.4  99.2 110.8  69.0  98.3 116.0 110.2 116.3  99.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2016  99.1  96.0  86.3 109.5  92.1 118.0  73.5 102.6 125.6 112.1 117.6 100.9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2017 106.6  96.5 112.8  89.5 115.0 110.7  69.6 118.0 125.6 120.4 130.4 100.9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2018 120.8 101.9 107.5 108.1 111.1 116.4  69.6 133.0 122.6 136.0 139.2  99.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2019 126.7 110.8 119.4 106.6 117.1 123.2  80.7 114.9 134.3 140.2 136.1 106.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2020 120.6 112.4 123.6  98.7 109.9 121.1  85.2 109.8 139.5 128.5 133.0 116.2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2021 116.0 105.2 120.4 116.2 106.4 123.8  71.1 110.9 147.1                  </span>
 <span class="r-in"><span><span class="fu">pickmdl_data</span><span class="op">(</span><span class="st">"qseries"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       Qtr1  Qtr2  Qtr3  Qtr4</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2005  69.1  72.9  83.2  89.2</span>
@@ -561,7 +562,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Øyvind Langsrud, Dinh Quang Pham, Ane Seierstad.</p>
+  <p>Developed by Øyvind Langsrud, Dinh Quang Pham, Ane Seierstad, Jens Kristoffer Haug.</p>
 </div>
 
 <div class="pkgdown-footer-right">
