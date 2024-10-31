@@ -1,8 +1,8 @@
 Package: pickmdl
 Type: Package
 Title: PICKMDL for RJDemetra
-Version: 0.6.0
-Date: 2024-10-25
+Version: 0.6.1
+Date: 2024-10-31
 Authors@R: c(person("Øyvind", "Langsrud", role = c("aut", "cre"), email = "oyl@ssb.no"),
              person("Dinh Quang", "Pham", role = c("aut")),
              person("Ane", "Seierstad", role = c("aut")),

@@ -31,7 +31,8 @@ x13_both <- function(series, ..., userdefined = NULL, both_output = "main",
                         fastfirst = TRUE,
                         verbose = FALSE,
                         output = "sa",
-                        add_comment = TRUE){
+                        add_comment = TRUE,
+                        old_crit2 = TRUE){
   if(!(both_output %in% c("main", "spec", "both")))
     stop('Allowed values of parameter both_output are "main", "spec" and "both".')
   

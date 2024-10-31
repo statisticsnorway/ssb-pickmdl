@@ -1,3 +1,7 @@
+
+# Tests made for new crit2
+options(pickmdl.old_crit2 = FALSE)
+
 test_that("x13_pickmdl works ok", {
   myseries <- pickmdl_data("myseries")
   

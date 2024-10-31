@@ -41,7 +41,12 @@
 #' @param add_comment When `TRUE`, a  comment attribute 
 #'      (character vector with `ok`, `ok_final` and `mdl_nr`) will 
 #'      be added to the \code{\link{x13}} output object. Use \code{\link{comment}} 
-#'      to get the attribute or \code{\link{ok}} to get the attribute converted to a list.     
+#'      to get the attribute or \code{\link{ok}} to get the attribute converted to a list. 
+#' @param old_crit2  Logical. The p-value criterion used for PICKMDL criterion number 2.
+#'       Set to `FALSE` for "Ljung-Box" and to `TRUE` for "Ljung-Box (residuals at seasonal lags)".
+#'       This parameter can be overridden by setting the `"pickmdl.old_crit2"` option,
+#'       in which case the option value will take precedence.
+#'
 #'
 #' @return By default an `x13` output object, or otherwise a list as specified by parameter `output`.
 #' @export
@@ -212,8 +217,18 @@ x13_pickmdl <- function(series, spec,
                         fastfirst = TRUE,
                         verbose = FALSE,
                         output = "sa",
-                        add_comment = TRUE) {
+                        add_comment = TRUE,
+                        old_crit2 = TRUE) {
   
+  original_option <- getOption("pickmdl.old_crit2")
+  
+  # Set the option to `old_crit2` only if it does not already exist
+  if (is.null(original_option)) {
+    options(pickmdl.old_crit2 = old_crit2)
+    
+    # Ensure that the option is removed when the function exits
+    on.exit(options(pickmdl.old_crit2 = NULL), add = TRUE)
+  }
   
   if (is.logical(corona)) {
     if (corona) {
