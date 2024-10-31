@@ -25,7 +25,8 @@ x13_pickmdl(
   fastfirst = TRUE,
   verbose = FALSE,
   output = "sa",
-  add_comment = TRUE
+  add_comment = TRUE,
+  old_crit2 = TRUE
 )
 
 x13_automdl(..., automdl.enabled = TRUE)
@@ -90,6 +91,11 @@ This affects the output when \code{output = "all"}.}
 (character vector with \code{ok}, \code{ok_final} and \code{mdl_nr}) will
 be added to the \code{\link{x13}} output object. Use \code{\link{comment}}
 to get the attribute or \code{\link{ok}} to get the attribute converted to a list.}
+
+\item{old_crit2}{Logical. The p-value criterion used for PICKMDL criterion number 2.
+Set to \code{FALSE} for "Ljung-Box" and to \code{TRUE} for "Ljung-Box (residuals at seasonal lags)".
+This parameter can be overridden by setting the \code{"pickmdl.old_crit2"} option,
+in which case the option value will take precedence.}
 }
 \value{
 By default an \code{x13} output object, or otherwise a list as specified by parameter \code{output}.

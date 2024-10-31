@@ -57,7 +57,10 @@ crit1 <- function(sa){
 #' @export
 crit2 <- function(sa){
   hj1 <- sa$regarima$residuals.stat$tests$P.value
-  hj1[4] 
+  if (isTRUE(getOption("pickmdl.old_crit2"))) {   # see ?x13_pickmdl
+    return(hj1[5])  # ljung box (residuals at seasonal lags)
+  }
+  hj1[4]   # ljung box
 }
 
 
