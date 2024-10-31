@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pickmdl</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,7 +58,8 @@
 <span>  fastfirst <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  output <span class="op">=</span> <span class="st">"sa"</span>,</span>
-<span>  add_comment <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  add_comment <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  old_crit2 <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -165,6 +166,13 @@ This affects the output when <code>output = "all"</code>.</p></dd>
 be added to the <code>x13</code> output object. Use <code><a href="https://rdrr.io/r/base/comment.html" class="external-link">comment</a></code>
 to get the attribute or <code><a href="ok.html">ok</a></code> to get the attribute converted to a list.</p></dd>
 
+
+<dt id="arg-old-crit-">old_crit2<a class="anchor" aria-label="anchor" href="#arg-old-crit-"></a></dt>
+<dd><p>Logical. The p-value criterion used for PICKMDL criterion number 2.
+Set to <code>FALSE</code> for "Ljung-Box" and to <code>TRUE</code> for "Ljung-Box (residuals at seasonal lags)".
+This parameter can be overridden by setting the <code>"pickmdl.old_crit2"</code> option,
+in which case the option value will take precedence.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -179,27 +187,27 @@ to get the attribute or <code><a href="ok.html">ok</a></code> to get the attribu
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fu">x13_both</span><span class="op">(</span><span class="fu"><a href="pickmdl_data.html">pickmdl_data</a></span><span class="op">(</span><span class="st">"myseries"</span><span class="op">)</span>, spec <span class="op">=</span> <span class="st">"RSA3"</span>, transform.function <span class="op">=</span> <span class="st">"Log"</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  p  d  q bp bd bq </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2  1  0  0  1  1 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> outlier.from updated: 2021-10-01  New outliers: 2011-06 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  0  1  1  0  1  1 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outlier.from updated: 2021-10-01  No new outliers.</span>
 <span class="r-in"><span><span class="va">a</span><span class="op">$</span><span class="va">decomposition</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Monitoring and Quality Assessment Statistics:</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       M stats</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> M(1)    0.577</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> M(2)    0.597</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> M(1)    0.640</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> M(2)    0.672</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> M(3)    3.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> M(4)    0.348</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> M(4)    0.087</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> M(5)    3.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> M(6)    0.737</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> M(7)    0.223</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> M(8)    0.364</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> M(9)    0.166</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> M(10)   0.394</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> M(11)   0.368</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Q       0.963</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Q-M2    1.008</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> M(6)    0.744</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> M(7)    0.226</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> M(8)    0.254</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> M(9)    0.139</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> M(10)   0.195</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> M(11)   0.186</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Q       0.954</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Q-M2    0.993</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Final filters: </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Seasonal filter:  3x5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Seasonal filter:  3x9</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Trend filter:  23-Henderson</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

@@ -9,7 +9,7 @@ The ARIMA model, outliers and filters can be identified at a certain date and th
 
     <a class="navbar-brand me-2" href="../index.html">pickmdl</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,7 +60,8 @@ The ARIMA model, outliers and filters can be identified at a certain date and th
 <span>  fastfirst <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  output <span class="op">=</span> <span class="st">"sa"</span>,</span>
-<span>  add_comment <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  add_comment <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  old_crit2 <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">x13_automdl</span><span class="op">(</span><span class="va">...</span>, automdl.enabled <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
@@ -167,6 +168,13 @@ This affects the output when <code>output = "all"</code>.</p></dd>
 be added to the <code>x13</code> output object. Use <code><a href="https://rdrr.io/r/base/comment.html" class="external-link">comment</a></code>
 to get the attribute or <code><a href="ok.html">ok</a></code> to get the attribute converted to a list.</p></dd>
 
+
+<dt id="arg-old-crit-">old_crit2<a class="anchor" aria-label="anchor" href="#arg-old-crit-"></a></dt>
+<dd><p>Logical. The p-value criterion used for PICKMDL criterion number 2.
+Set to <code>FALSE</code> for "Ljung-Box" and to <code>TRUE</code> for "Ljung-Box (residuals at seasonal lags)".
+This parameter can be overridden by setting the <code>"pickmdl.old_crit2"</code> option,
+in which case the option value will take precedence.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -181,11 +189,11 @@ to get the attribute or <code><a href="ok.html">ok</a></code> to get the attribu
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fu">x13_pickmdl</span><span class="op">(</span><span class="va">myseries</span>, <span class="va">spec_a</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  p  d  q bp bd bq </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2  1  0  0  1  1 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> outlier.from updated: 2021-10-01  New outliers: 2011-06 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  0  1  1  0  1  1 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outlier.from updated: 2021-10-01  No new outliers.</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/comment.html" class="external-link">comment</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       ok ok_final   mdl_nr </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   "TRUE"   "TRUE"      "3" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   "TRUE"   "TRUE"      "1" </span>
 <span class="r-in"><span><span class="fu"><a href="ok.html">ok</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $ok</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
@@ -194,57 +202,51 @@ to get the attribute or <code><a href="ok.html">ok</a></code> to get the attribu
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $mdl_nr</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu"><a href="ok.html">ok</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       ok ok_final   mdl_nr </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        1        1        3 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        1        1        1 </span>
 <span class="r-in"><span><span class="va">a</span><span class="op">$</span><span class="va">regarima</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> y = regression model + arima (2, 1, 0, 0, 1, 1)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> y = regression model + arima (0, 1, 1, 0, 1, 1)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Log-transformation: yes</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Coefficients:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           Estimate Std. Error</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Phi(1)      0.9848      0.061</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Phi(2)      0.5766      0.061</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> BTheta(1)  -0.8921      0.045</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             Estimate Std. Error</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> TC (6-2011)  -0.1905      0.047</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Theta(1)   -0.8434      0.040</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> BTheta(1)  -0.9735      0.044</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Residual standard error: 0.06728 on 183 degrees of freedom</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Log likelihood = 230.6, aic =  1260 aicc =  1260, bic(corrected for length) = -5.286</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Residual standard error: 0.0707 on 185 degrees of freedom</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Log likelihood =   216, aic =  1285 aicc =  1285, bic(corrected for length) = -5.243</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">a2</span> <span class="op">&lt;-</span> <span class="fu">x13_pickmdl</span><span class="op">(</span><span class="va">myseries</span>, <span class="va">spec_a</span>, identification_end <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2014</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">a2</span><span class="op">$</span><span class="va">regarima</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> y = regression model + arima (0, 1, 2, 0, 1, 1)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> y = regression model + arima (0, 1, 1, 0, 1, 1)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Log-transformation: yes</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Coefficients:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           Estimate Std. Error</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Theta(1)   -1.1262      0.069</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Theta(2)    0.3489      0.070</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> BTheta(1)  -0.9656      0.044</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Theta(1)   -0.8434      0.040</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> BTheta(1)  -0.9735      0.044</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Residual standard error: 0.06684 on 184 degrees of freedom</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Log likelihood = 227.2, aic =  1265 aicc =  1265, bic(corrected for length) = -5.327</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Residual standard error: 0.0707 on 185 degrees of freedom</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Log likelihood =   216, aic =  1285 aicc =  1285, bic(corrected for length) = -5.243</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># As above, another way</span></span></span>
 <span class="r-in"><span><span class="va">a3</span> <span class="op">&lt;-</span> <span class="fu">x13_pickmdl</span><span class="op">(</span><span class="va">myseries</span>, <span class="va">spec_a</span>, identification_estimate.to <span class="op">=</span> <span class="st">"2014-03-01"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">a3</span><span class="op">$</span><span class="va">regarima</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> y = regression model + arima (0, 1, 2, 0, 1, 1)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> y = regression model + arima (0, 1, 1, 0, 1, 1)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Log-transformation: yes</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Coefficients:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           Estimate Std. Error</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Theta(1)   -1.1262      0.069</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Theta(2)    0.3489      0.070</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> BTheta(1)  -0.9656      0.044</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Theta(1)   -0.8434      0.040</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> BTheta(1)  -0.9735      0.044</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Residual standard error: 0.06684 on 184 degrees of freedom</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Log likelihood = 227.2, aic =  1265 aicc =  1265, bic(corrected for length) = -5.327</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Residual standard error: 0.0707 on 185 degrees of freedom</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Log likelihood =   216, aic =  1285 aicc =  1285, bic(corrected for length) = -5.243</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">a4</span> <span class="op">&lt;-</span> <span class="fu">x13_automdl</span><span class="op">(</span><span class="va">myseries</span>, <span class="va">spec_a</span>, identification_end <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2014</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
@@ -530,11 +532,11 @@ to get the attribute or <code><a href="ok.html">ok</a></code> to get the attribu
 <span class="r-out co"><span class="r-pr">#&gt;</span> Trend filter:  23-Henderson</span>
 <span class="r-in"><span><span class="va">k</span><span class="op">$</span><span class="va">crit_tab</span>          <span class="co"># Table of criteria </span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           crit1     crit2      crit3    m_aic</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 0.04327429 0.8152558 -0.7117072 344.0338</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 0.04325725 0.8153116 -0.7497611 345.7862</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3,] 0.04875133 0.7400029  0.0000000 344.3432</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [4,] 0.04160156 0.6560022 -0.9999670 345.5339</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [5,] 0.04947505 0.8551679 -0.3132899 346.8342</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 0.04327429 0.4368229 -0.7117072 344.0338</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 0.04325725 0.5369880 -0.7497611 345.7862</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,] 0.04875133 0.5635680  0.0000000 344.3432</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4,] 0.04160156 0.9047367 -0.9999670 345.5339</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [5,] 0.04947505 0.6257011 -0.3132899 346.8342</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Effect of identify_outliers (TRUE is default)</span></span></span>
@@ -604,42 +606,40 @@ to get the attribute or <code><a href="ok.html">ok</a></code> to get the attribu
 <span class="r-in"><span><span class="co"># With corona outliers (even possible when series is not long enough) </span></span></span>
 <span class="r-in"><span><span class="va">m4</span> <span class="op">&lt;-</span> <span class="fu">x13_pickmdl</span><span class="op">(</span><span class="va">myseries</span>, <span class="va">spec_a</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, corona <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  p  d  q bp bd bq </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2  1  0  0  1  1 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> outlier.from updated: 2021-10-01  New outliers: 2011-06 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  0  1  1  0  1  1 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outlier.from updated: 2021-10-01  No new outliers.</span>
 <span class="r-in"><span><span class="va">m4</span><span class="op">$</span><span class="va">regarima</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> y = regression model + arima (2, 1, 0, 0, 1, 1)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> y = regression model + arima (0, 1, 1, 0, 1, 1)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Log-transformation: yes</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Coefficients:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           Estimate Std. Error</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Phi(1)      1.0034      0.062</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Phi(2)      0.5914      0.062</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> BTheta(1)  -1.0000      0.050</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Theta(1)   -0.8400      0.043</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> BTheta(1)  -0.9999      0.054</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              Estimate Std. Error</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> LS (3-2020)   0.07527      0.065</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> LS (4-2020)  -0.19815      0.092</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> LS (5-2020)   0.05206      0.096</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> LS (6-2020)   0.02156      0.096</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> LS (7-2020)   0.14629      0.100</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> LS (8-2020)  -0.22966      0.102</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> LS (9-2020)   0.15744      0.102</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> LS (10-2020) -0.07074      0.103</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> LS (11-2020)  0.02439      0.103</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> LS (12-2020)  0.09929      0.103</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> LS (1-2021)  -0.19861      0.103</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> LS (2-2021)   0.06577      0.103</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> LS (3-2021)   0.06252      0.103</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> LS (4-2021)  -0.01084      0.103</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> LS (5-2021)  -0.11020      0.103</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> LS (6-2021)   0.04380      0.103</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> LS (7-2021)  -0.04410      0.103</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> LS (8-2021)  -0.03237      0.103</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> LS (9-2021)   0.18665      0.103</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> TC (6-2011)  -0.19161      0.045</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               Estimate Std. Error</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> LS (3-2020)   0.043454      0.072</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> LS (4-2020)  -0.198398      0.093</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> LS (5-2020)   0.085146      0.093</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> LS (6-2020)   0.001099      0.093</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> LS (7-2020)   0.156203      0.093</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> LS (8-2020)  -0.227038      0.093</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> LS (9-2020)   0.142477      0.093</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> LS (10-2020) -0.062197      0.093</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> LS (11-2020)  0.020592      0.093</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> LS (12-2020)  0.096913      0.093</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> LS (1-2021)  -0.193416      0.093</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> LS (2-2021)   0.062293      0.093</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> LS (3-2021)   0.060260      0.093</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> LS (4-2021)  -0.008939      0.093</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> LS (5-2021)  -0.110447      0.093</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> LS (6-2021)   0.055515      0.093</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> LS (7-2021)  -0.046762      0.093</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> LS (8-2021)  -0.036155      0.093</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> LS (9-2021)   0.185556      0.093</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Residual standard error: 0.05883 on 164 degrees of freedom</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Log likelihood = 248.2, aic =  1263 aicc =  1270, bic(corrected for length) = -5.025</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Residual standard error: 0.06529 on 166 degrees of freedom</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Log likelihood = 228.7, aic =  1298 aicc =  1304, bic(corrected for length) = -4.873</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="va">m5</span> <span class="op">&lt;-</span> <span class="fu">x13_pickmdl</span><span class="op">(</span><span class="va">myseries</span>, <span class="fu">x13_spec</span><span class="op">(</span><span class="st">"RSA3"</span>, outlier.usedefcv <span class="op">=</span> <span class="cn">FALSE</span>, outlier.cv <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>, </span></span>
 <span class="r-in"><span>                  identification_end <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2010</span>, <span class="fl">2</span><span class="op">)</span>, identify_outliers <span class="op">=</span> <span class="cn">TRUE</span>, </span></span>
@@ -756,30 +756,28 @@ to get the attribute or <code><a href="ok.html">ok</a></code> to get the attribu
 <span class="r-in"><span><span class="co"># With corona outliers (even possible when series is not long enough) </span></span></span>
 <span class="r-in"><span><span class="va">q4</span> <span class="op">&lt;-</span> <span class="fu">x13_pickmdl</span><span class="op">(</span><span class="va">qseries</span>, <span class="va">spec_a</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, corona <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  p  d  q bp bd bq </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2  1  0  0  1  1 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> outlier.from updated: 2021-10-01  New outliers: 2008-07 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  0  1  1  0  1  1 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outlier.from updated: 2021-10-01  No new outliers.</span>
 <span class="r-in"><span><span class="va">q4</span><span class="op">$</span><span class="va">regarima</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> y = regression model + arima (2, 1, 0, 0, 1, 1)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> y = regression model + arima (0, 1, 1, 0, 1, 1)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Log-transformation: yes</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Coefficients:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           Estimate Std. Error</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Phi(1)      0.4350      0.134</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Phi(2)      0.3402      0.130</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> BTheta(1)  -1.0000      0.103</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Theta(1)   -0.2713      0.135</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> BTheta(1)  -0.9997      0.087</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 Estimate Std. Error</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> LS (I-2020)   -0.0398499      0.038</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> LS (II-2020)  -0.0287782      0.042</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> LS (III-2020) -0.0745579      0.042</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> LS (IV-2020)   0.0850556      0.043</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> LS (I-2021)   -0.0006202      0.043</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> LS (II-2021)  -0.1151605      0.043</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> LS (III-2021)  0.0442247      0.043</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> LS (III-2008) -0.1253552      0.033</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                Estimate Std. Error</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> LS (I-2020)   -0.031164      0.043</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> LS (II-2020)  -0.038923      0.044</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> LS (III-2020) -0.064265      0.044</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> LS (IV-2020)   0.088448      0.044</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> LS (I-2021)   -0.002755      0.045</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> LS (II-2021)  -0.116141      0.044</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> LS (III-2021)  0.053282      0.044</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Residual standard error: 0.0335 on 50 degrees of freedom</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Log likelihood = 116.8, aic = 358.1 aicc = 364.5, bic(corrected for length) = -6.06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Residual standard error: 0.03839 on 52 degrees of freedom</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Log likelihood = 108.5, aic = 370.7 aicc = 375.1, bic(corrected for length) = -5.921</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="va">q5</span> <span class="op">&lt;-</span> <span class="fu">x13_pickmdl</span><span class="op">(</span><span class="va">qseries</span>, <span class="fu">x13_spec</span><span class="op">(</span><span class="st">"RSA3"</span>, outlier.usedefcv <span class="op">=</span> <span class="cn">FALSE</span>, outlier.cv <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>, </span></span>
 <span class="r-in"><span>                  identification_end <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2010</span>, <span class="fl">2</span><span class="op">)</span>, identify_outliers <span class="op">=</span> <span class="cn">TRUE</span>, </span></span>
