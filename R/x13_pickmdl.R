@@ -266,7 +266,7 @@ x13_pickmdl <- function(series, spec,
     }
   }
   
-  if (!is.null(corona)) {  # Because of possible error (bug) only include outliers within estimation span 
+  if (!is.null(corona)) { 
     end_ts <- end(ts(1:2, start = end(window(series, end = identification_end)), frequency = frequency(series)))
     end_ts_final <- end(ts(1:2, start = end(series), frequency = frequency(series)))
     if (frequency(series) == 4) {
@@ -278,6 +278,9 @@ x13_pickmdl <- function(series, spec,
     if (!is.null(identification_estimate.to)) {
       outlier_date_limit <- identification_estimate.to
     }
+  }
+  
+  if (!is.null(corona)) {  # Because of possible error (bug) only include outliers within estimation span 
     for (i in seq_along(spec)) {
       spec[[i]] <- update_spec_corona_outliers(spec[[i]], option = corona, outlier_date_limit = outlier_date_limit, freq = frequency(series))
     }
