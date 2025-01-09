@@ -26,7 +26,7 @@ x13_both(
   verbose = FALSE,
   output = "sa",
   add_comment = TRUE,
-  old_crit2 = TRUE
+  old_crit2 = NA
 )
 }
 \arguments{
@@ -93,7 +93,11 @@ to get the attribute or \code{\link{ok}} to get the attribute converted to a lis
 \item{old_crit2}{Logical. The p-value criterion used for PICKMDL criterion number 2.
 Set to \code{FALSE} for "Ljung-Box" and to \code{TRUE} for "Ljung-Box (residuals at seasonal lags)".
 This parameter can be overridden by setting the \code{"pickmdl.old_crit2"} option,
-in which case the option value will take precedence.}
+in which case the option value will take precedence.
+The default value (\code{NA}) means that \code{old_crit2 = (date_found < "2024-10-15")},
+where \code{date_found} refers to the end date of the series used for model selection.
+This date is determined by \code{identification_end} or \code{identification_estimate.to} when one of these is specified.
+The default value is chosen to ensure that the new criterion is phased in automatically.}
 }
 \value{
 By default an \code{x13} output object, or otherwise a list as specified by parameter \code{output} and \code{both_output}.
