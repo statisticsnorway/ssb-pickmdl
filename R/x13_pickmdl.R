@@ -46,7 +46,10 @@
 #'       Set to `FALSE` for "Ljung-Box" and to `TRUE` for "Ljung-Box (residuals at seasonal lags)".
 #'       This parameter can be overridden by setting the `"pickmdl.old_crit2"` option,
 #'       in which case the option value will take precedence.
-#'
+#'       The default value (`NA`) means that `old_crit2 = (date_found < "2024-10-15")`, 
+#'       where `date_found` refers to the end date of the series used for model selection. 
+#'       This date is determined by `identification_end` or `identification_estimate.to` when one of these is specified.
+#'       The default value is chosen to ensure that the new criterion is phased in automatically. 
 #'
 #' @return By default an `x13` output object, or otherwise a list as specified by parameter `output`.
 #' @export
@@ -218,17 +221,9 @@ x13_pickmdl <- function(series, spec,
                         verbose = FALSE,
                         output = "sa",
                         add_comment = TRUE,
-                        old_crit2 = TRUE) {
+                        old_crit2 = NA) {
   
   original_option <- getOption("pickmdl.old_crit2")
-  
-  # Set the option to `old_crit2` only if it does not already exist
-  if (is.null(original_option)) {
-    options(pickmdl.old_crit2 = old_crit2)
-    
-    # Ensure that the option is removed when the function exits
-    on.exit(options(pickmdl.old_crit2 = NULL), add = TRUE)
-  }
   
   if (is.logical(corona)) {
     if (corona) {
@@ -266,7 +261,7 @@ x13_pickmdl <- function(series, spec,
     }
   }
   
-  if (!is.null(corona)) {  # Because of possible error (bug) only include outliers within estimation span 
+  if (!is.null(corona) | is.na(old_crit2)) { 
     end_ts <- end(ts(1:2, start = end(window(series, end = identification_end)), frequency = frequency(series)))
     end_ts_final <- end(ts(1:2, start = end(series), frequency = frequency(series)))
     if (frequency(series) == 4) {
@@ -278,6 +273,27 @@ x13_pickmdl <- function(series, spec,
     if (!is.null(identification_estimate.to)) {
       outlier_date_limit <- identification_estimate.to
     }
+  }
+  
+  if (is.na(old_crit2)) {
+    threshold_date <- "2024-10-15"
+    old_crit2 <- as.Date(outlier_date_limit) < as.Date(threshold_date)
+    if (verbose) {
+      cat("old_crit2 set to ", old_crit2, " based on the date found (", outlier_date_limit, 
+          ") and threshold (", threshold_date, ").\n", sep = "")
+    }
+  }
+  
+  
+  # Set the option to `old_crit2` only if it does not already exist
+  if (is.null(original_option)) {
+    options(pickmdl.old_crit2 = old_crit2)
+    
+    # Ensure that the option is removed when the function exits
+    on.exit(options(pickmdl.old_crit2 = NULL), add = TRUE)
+  }
+  
+  if (!is.null(corona)) {  # Because of possible error (bug) only include outliers within estimation span 
     for (i in seq_along(spec)) {
       spec[[i]] <- update_spec_corona_outliers(spec[[i]], option = corona, outlier_date_limit = outlier_date_limit, freq = frequency(series))
     }
