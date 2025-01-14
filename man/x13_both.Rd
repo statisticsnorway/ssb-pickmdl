@@ -95,8 +95,8 @@ Set to \code{FALSE} for "Ljung-Box" and to \code{TRUE} for "Ljung-Box (residuals
 This parameter can be overridden by setting the \code{"pickmdl.old_crit2"} option,
 in which case the option value will take precedence.
 The default value (\code{NA}) means that \code{old_crit2 = (date_found < "2024-10-15")},
-where \code{date_found} refers to the end date of the series used for model selection.
-This date is determined by \code{identification_end} or \code{identification_estimate.to} when one of these is specified.
+where \code{date_found} refers to the end date according to \code{identification_end} or \code{identification_estimate.to}.
+If none of these is specified, \code{old_crit2}  is set to \code{FALSE}.
 The default value is chosen to ensure that the new criterion is phased in automatically.}
 }
 \value{

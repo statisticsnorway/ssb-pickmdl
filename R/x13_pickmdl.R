@@ -47,8 +47,8 @@
 #'       This parameter can be overridden by setting the `"pickmdl.old_crit2"` option,
 #'       in which case the option value will take precedence.
 #'       The default value (`NA`) means that `old_crit2 = (date_found < "2024-10-15")`, 
-#'       where `date_found` refers to the end date of the series used for model selection. 
-#'       This date is determined by `identification_end` or `identification_estimate.to` when one of these is specified.
+#'       where `date_found` refers to the end date according to `identification_end` or `identification_estimate.to`.
+#'       If none of these is specified, `old_crit2`  is set to `FALSE`.
 #'       The default value is chosen to ensure that the new criterion is phased in automatically. 
 #'
 #' @return By default an `x13` output object, or otherwise a list as specified by parameter `output`.
@@ -276,11 +276,17 @@ x13_pickmdl <- function(series, spec,
   }
   
   if (is.na(old_crit2)) {
-    threshold_date <- "2024-10-15"
-    old_crit2 <- as.Date(outlier_date_limit) < as.Date(threshold_date)
-    if (verbose) {
-      cat("old_crit2 set to ", old_crit2, " based on the date found (", outlier_date_limit, 
-          ") and threshold (", threshold_date, ").\n", sep = "")
+    if (is.null(identification_end) & is.null(identification_estimate.to)) {
+      old_crit2 <- FALSE
+      if (verbose) {
+        cat("old_crit2 set to ", old_crit2, " since no identification specification. \n", sep = "")
+      }
+    } else {
+      threshold_date <- "2024-10-15"
+      old_crit2 <- as.Date(outlier_date_limit) < as.Date(threshold_date)
+      if (verbose) {
+        cat("old_crit2 set to ", old_crit2, " based on the date found (", outlier_date_limit, ") and threshold (", threshold_date, ").\n", sep = "")
+      }
     }
   }
   

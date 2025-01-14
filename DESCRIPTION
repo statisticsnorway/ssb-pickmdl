@@ -1,15 +1,15 @@
 Package: pickmdl
 Type: Package
 Title: PICKMDL for RJDemetra
-Version: 0.6.2
-Date: 2025-01-09
+Version: 0.6.3
+Date: 2025-01-13
 Authors@R: c(person("Øyvind", "Langsrud", role = c("aut", "cre"), email = "oyl@ssb.no"),
              person("Dinh Quang", "Pham", role = c("aut")),
              person("Ane", "Seierstad", role = c("aut")),
              person("Jens Kristoffer", "Haug", role = c("aut")),
-             person("Joern Ivar", "Hamre", role = c("ctb")),
+             person("Joern Ivar", "Hamre", role = c("aut")),
              person("Statistics Norway", role = "cph"))
-Author: Øyvind Langsrud [aut, cre], Dinh Quang Pham [aut], Ane Seierstad [aut], Joern Ivar Hamre [ctb] 
+Author: Øyvind Langsrud [aut, cre], Dinh Quang Pham [aut], Ane Seierstad [aut], Jens Kristoffer Haug [aut], Joern Ivar Hamre [aut] 
 Maintainer: Øyvind Langsrud <oyl@ssb.no>
 Imports: stats, lubridate, timeDate
 Depends: RJDemetra
