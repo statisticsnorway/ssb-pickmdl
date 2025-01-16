@@ -53,9 +53,6 @@ test_that("x13_both and x13_text_frame", {
 })  
 
 test_that("x13_both and x13_text_frame", {
-  skip("only works when run manually")
-  # A fix is to include code in helper file
-  # But still problems when run from check(): Error in eval(m_call) : object 'seriesABC' not found
 
   myseries <- pickmdl_data("myseries")
   seriesABC <- cbind(A = myseries, B = myseries + 10, C = myseries + 20)
