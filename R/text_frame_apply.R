@@ -59,6 +59,7 @@ text_frame_apply <- function(text_frame, fun = NULL, id = NULL, ..., call_list =
       cat("\n")
       flush.console()
     }
+    call_i <- lapply(call_i, eval, envir = envir)
     out[[i]] <- eval(call_i, envir = envir)
   }
   
