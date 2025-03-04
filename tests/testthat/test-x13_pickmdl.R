@@ -68,12 +68,31 @@ test_that("x13_both and x13_text_frame", {
   outB   <- x13_text_frame(tf, series = "seriesABC", spec = "RSA3", transform.function = "Log", 
                            id = "B")
   
+  bothB <- x13_both(myseries + 10, 
+                    spec = "RSA3", 
+                    transform.function = "Log",
+                    usrdef.outliersDate = "2009-01-01",
+                    usrdef.outliersType = "AO",
+                    usrdef.outliersEnabled = TRUE)
+  
+  
+  x13B <- x13_pickmdl(myseries + 10,  
+                      x13_spec(spec = "RSA3", 
+                               transform.function = "Log",
+                               usrdef.outliersDate = "2009-01-01",
+                               usrdef.outliersType = "AO",
+                               usrdef.outliersEnabled = TRUE))
+  
+  
   x13_both_old_method <- TRUE
   
   
   outABC_old <- x13_text_frame(tf, series = "seriesABC", spec = "RSA3", transform.function = "Log")
   outB_old   <- x13_text_frame(tf, series = "seriesABC", spec = "RSA3", transform.function = "Log", 
                                id = "B")
+  
+  expect_identical(x13B, outB)
+  expect_identical(bothB, outB)
   expect_identical(outABC[[2]], outB) 
   expect_identical(outABC_old, outABC)
   expect_identical(outB_old, outB)

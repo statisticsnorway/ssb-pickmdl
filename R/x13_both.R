@@ -70,7 +70,7 @@ x13_both <- function(series, ..., userdefined = NULL, both_output = "main",
     m_call <- m_call[!(names(m_call) %in% c(dot_names, "both_output"))]
     m_call[["spec"]] <- spec
     m_call[[1]] <- x13_pickmdl
-    main <- eval(m_call)
+    main <- eval(m_call, envir = parent.frame())
   }
                               
   if(both_output == "both"){
