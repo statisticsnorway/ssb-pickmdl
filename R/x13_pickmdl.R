@@ -243,8 +243,8 @@ x13_pickmdl <- function(series, spec,
   
   # specify_automdl.enabled is new functionality.
   # Note: After this, the parameter name automdl.enabled can be perceived as misleading
-  automdl.enabled <- !isFALSE(automdl.enabled)
   specify_automdl.enabled <- isTRUE(automdl.enabled)
+  automdl.enabled <- !isFALSE(automdl.enabled)
   
   auto_in_pickmdl <- FALSE
   
