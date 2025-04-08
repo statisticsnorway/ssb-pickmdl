@@ -459,7 +459,9 @@ x13_pickmdl <- function(series, spec,
   }
   
   if (add_comment) {
-    comment(sa) <- c(ok = as.character(ok), ok_final = as.character(ok_final), mdl_nr = as.character(mdl_nr))
+    comment(sa) <- c(ok = as.character(ok), 
+                     ok_final = as.character(ok_final), 
+                     mdl_nr = as.character(mdl_nr * c(1, NA)[automdl.enabled + 1]))
   }
   
   if(output == "sa_spec"){
