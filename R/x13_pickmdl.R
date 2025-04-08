@@ -31,8 +31,12 @@
 #' @param identify_s_filter When `TRUE`, Seasonal moving average filter is identified by the shortened series.
 #' @param identify_outliers When `TRUE`, Outliers are identified by the shortened series.
 #' @param identify_arima_mu When `TRUE`, `arima.mu` is identified by the shortened series (see \code{\link{arima_mu}}).
-#' @param automdl.enabled When `TRUE`, automdl is performed instead of pickmdl. 
-#'            If `spec` is a list of several objects as outputted from `x13_spec_pickmdl`, only first object is used.
+#' @param automdl.enabled Logical value or any other value.
+#'   - When set to `FALSE` (the default), the pickmdl routine is applied.
+#'   - When set to `TRUE`, the automdl routine is performed.
+#'   - For any value other than `TRUE` or `FALSE`, the ARIMA model is chosen as specified by `spec`.
+#'
+#' Note that when `automdl.enabled` is not `FALSE`, if `spec` is a list containing several objects outputted from `x13_spec_pickmdl`, only the first object is used.
 #' @param fastfirst When `TRUE` and when pickmdl with `crit_selection` parameter `"first"`, 
 #'                  only as many models as needed are run.
 #'                  This affects the output when `output = "all"`. 
@@ -236,7 +240,11 @@ x13_pickmdl <- function(series, spec,
   if(!(output %in% c("sa", "spec", "sa_spec", "all")))
     stop('Allowed values of parameter output are "sa", "spec", "sa_spec" and "all".')
   
-  automdl.enabled <- isTRUE(automdl.enabled)
+  
+  # specify_automdl.enabled is new functionality.
+  # Note: After this, the parameter name automdl.enabled can be perceived as misleading
+  specify_automdl.enabled <- isTRUE(automdl.enabled)
+  automdl.enabled <- !isFALSE(automdl.enabled)
   
   auto_in_pickmdl <- FALSE
   
@@ -307,7 +315,9 @@ x13_pickmdl <- function(series, spec,
   
   if (automdl.enabled) {
     spec <- spec[1]
-    spec[[1]] <- x13_spec(spec[[1]], automdl.enabled = TRUE)
+    if (specify_automdl.enabled) {
+      spec[[1]] <- x13_spec(spec[[1]], automdl.enabled = TRUE)
+    }
   }
   
   if (fastfirst) {
@@ -449,7 +459,9 @@ x13_pickmdl <- function(series, spec,
   }
   
   if (add_comment) {
-    comment(sa) <- c(ok = as.character(ok), ok_final = as.character(ok_final), mdl_nr = as.character(mdl_nr))
+    comment(sa) <- c(ok = as.character(ok), 
+                     ok_final = as.character(ok_final), 
+                     mdl_nr = as.character(mdl_nr * c(1, NA)[automdl.enabled + 1]))
   }
   
   if(output == "sa_spec"){

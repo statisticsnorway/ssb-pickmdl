@@ -76,8 +76,14 @@ This is an alternative to  \code{identification_end}.}
 
 \item{identify_arima_mu}{When \code{TRUE}, \code{arima.mu} is identified by the shortened series (see \code{\link{arima_mu}}).}
 
-\item{automdl.enabled}{When \code{TRUE}, automdl is performed instead of pickmdl.
-If \code{spec} is a list of several objects as outputted from \code{x13_spec_pickmdl}, only first object is used.}
+\item{automdl.enabled}{Logical value or any other value.
+\itemize{
+\item When set to \code{FALSE} (the default), the pickmdl routine is applied.
+\item When set to \code{TRUE}, the automdl routine is performed.
+\item For any value other than \code{TRUE} or \code{FALSE}, the ARIMA model is chosen as specified by \code{spec}.
+}
+
+Note that when \code{automdl.enabled} is not \code{FALSE}, if \code{spec} is a list containing several objects outputted from \code{x13_spec_pickmdl}, only the first object is used.}
 
 \item{fastfirst}{When \code{TRUE} and when pickmdl with \code{crit_selection} parameter \code{"first"},
 only as many models as needed are run.
