@@ -9,7 +9,7 @@ The ARIMA model, outliers and filters can be identified at a certain date and th
 
     <a class="navbar-brand me-2" href="../index.html">pickmdl</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -144,8 +144,10 @@ This is an alternative to  <code>identification_end</code>.</p></dd>
 
 
 <dt id="arg-automdl-enabled">automdl.enabled<a class="anchor" aria-label="anchor" href="#arg-automdl-enabled"></a></dt>
-<dd><p>When <code>TRUE</code>, automdl is performed instead of pickmdl.
-If <code>spec</code> is a list of several objects as outputted from <code>x13_spec_pickmdl</code>, only first object is used.</p></dd>
+<dd><p>Logical value or any other value.</p><ul><li><p>When set to <code>FALSE</code> (the default), the pickmdl routine is applied.</p></li>
+<li><p>When set to <code>TRUE</code>, the automdl routine is performed.</p></li>
+<li><p>For any value other than <code>TRUE</code> or <code>FALSE</code>, the ARIMA model is chosen as specified by <code>spec</code>.</p></li>
+</ul><p>Note that when <code>automdl.enabled</code> is not <code>FALSE</code>, if <code>spec</code> is a list containing several objects outputted from <code>x13_spec_pickmdl</code>, only the first object is used.</p></dd>
 
 
 <dt id="arg-fastfirst">fastfirst<a class="anchor" aria-label="anchor" href="#arg-fastfirst"></a></dt>
