@@ -45,8 +45,8 @@ x13_text_frame <- function(text_frame, series = NULL, id = NULL, ..., drop = TRU
       dots2list <- FALSE
       warning("dots2list ignored since ... used to call x13_text_frame")
     } else {
-      # `deparse(as.name(` included for old r version where character string needed. 
-      sys_call <- sys_call[!names(sys_call) %in% names(formals(get(deparse(as.name(sys_call[[1]])))))]
+      fml_names <- names(formals(x13_text_frame))
+      sys_call <- sys_call[!names(sys_call) %in% fml_names]
       sys_call <- as.list(sys_call)[-1]
       sys_call <- sys_call[names(sys_call) != ""]
     }
